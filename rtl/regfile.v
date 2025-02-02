@@ -8,24 +8,24 @@
 `timescale 1ns / 1ps
 
 module regfile(
-    input                          rst         ,
-    input                          clk         ,
+    input                               rst                        ,
+    input                               clk                        ,
     //write register
-    input  [`Reg_Addr-1:0]         waddr       ,          //write register
-    input  [`Reg-1:0]              wdata       ,          //write data
-    input                          we          ,          //data_en
+    input              [`Reg_Addr-1:0]  waddr                      ,//write register
+    input              [`Reg-1:0]       wdata                      ,//write data
+    input                               we                         ,//data_en
     //read register
-    input  [`Reg_Addr-1:0]         raddr1      ,          //reading addr
-    input                          re1         ,
-    input  [`Reg_Addr-1:0]         raddr2      ,
-    input                          re2         ,
+    input              [`Reg_Addr-1:0]  raddr1                     ,//reading addr
+    input                               re1                        ,
+    input              [`Reg_Addr-1:0]  raddr2                     ,
+    input                               re2                        ,
     //data output
-    output reg [`Reg-1:0]     rdata1      ,
-    output reg [`Reg-1:0]     rdata2      
+    output reg         [`Reg-1:0]       rdata1                     ,
+    output reg         [`Reg-1:0]       rdata2                      
     );
     
     //32 register
-    reg [`Reg-1:0] regs [`Reg_Num-1:0];
+reg                    [`Reg-1:0] regs [`Reg_Num-1:0]                           ;
     //writing operation
     always@(posedge clk)
         begin

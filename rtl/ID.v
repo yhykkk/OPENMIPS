@@ -9,37 +9,37 @@
 
 
 module ID(
-    input                             rst          ,
-    input        [`Inst_Addr-1:0]     pc_i         ,      //address for decoder
-    input        [`Inst_Data-1:0]     inst_i       ,      //instruction for decoder
-    input        [`Reg-1:0]           reg1_data_i  ,      //data read in regfile
-    input        [`Reg-1:0]           reg2_data_i  ,
-    output  reg                       reg1_read_o  ,      //read enable for regfile
-    output  reg                       reg2_read_o  , 
-    output  reg  [`Reg_Addr-1:0]      reg1_addr_o  ,      //read address for regfile
-    output  reg  [`Reg_Addr-1:0]      reg2_addr_o  ,
-    output  reg  [`Alu_Op-1:0]        aluop_o      ,       //operational subclass
-    output  reg  [`Alu_Sel-1:0]       alusel_o     ,       //operational class
-    output  reg  [`Reg-1:0]           reg1_o       ,       //Ô´²Ù×÷Êı
-    output  reg  [`Reg-1:0]           reg2_o       ,
-    output  reg  [`Reg_Addr-1:0]      wd_o         ,        //address for aimed register
-    output  reg                       wreg_o                //write enable for aimed register
+    input                               rst                        ,
+    input              [`Inst_Addr-1:0] pc_i                       ,//address for decoder
+    input              [`Inst_Data-1:0] inst_i                     ,//instruction for decoder
+    input              [`Reg-1:0]       reg1_data_i                ,//data read in regfile
+    input              [`Reg-1:0]       reg2_data_i                ,
+    output reg                          reg1_read_o                ,//read enable for regfile
+    output reg                          reg2_read_o                ,
+    output reg         [`Reg_Addr-1:0]  reg1_addr_o                ,//read address for regfile
+    output reg         [`Reg_Addr-1:0]  reg2_addr_o                ,
+    output reg         [`Alu_Op-1:0]    aluop_o                    ,//operational subclass
+    output reg         [`Alu_Sel-1:0]   alusel_o                   ,//operational class
+    output reg         [`Reg-1:0]       reg1_o                     ,//Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    output reg         [`Reg-1:0]       reg2_o                     ,
+    output reg         [`Reg_Addr-1:0]  wd_o                       ,//address for aimed register
+    output reg                          wreg_o                      //write enable for aimed register
     );
     
     //get code
-    wire [5:0] op;
-    wire [4:0] op2;
-    wire [5:0] op3;
-    wire [4:0] op4;
+wire                   [   5:0]         op                         ;
+wire                   [   4:0]         op2                        ;
+wire                   [   5:0]         op3                        ;
+wire                   [   4:0]         op4                        ;
     
     assign op  = inst_i [31:26] ;
     assign op2 = inst_i [10:6] ;
     assign op3 = inst_i [5:0] ;
     assign op4 = inst_i [20:16] ;
     //save imm
-    reg [`Reg-1:0] imm;                                      //immediate number
+reg                    [`Reg-1:0]       imm                        ;//immediate number
     //inst validity
-    reg instvalid;
+reg                                     instvalid                  ;
     
     //decoding
     always@(*)begin

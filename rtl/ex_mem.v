@@ -9,14 +9,14 @@
 
 
 module ex_mem(
-    input                             rst          ,
-    input                             clk          ,
-    input         [`Reg_Addr-1:0]     ex_wd        ,
-    input                             ex_wreg      ,
-    input         [`Reg-1:0]          ex_wdata     ,
-    output reg   [`Reg_Addr-1:0]      mem_wd       ,
-    output reg                        mem_wreg     ,
-    output reg   [`Reg-1:0]           mem_wdata
+    input                               rst                        ,
+    input                               clk                        ,
+    input              [`Reg_Addr-1:0]  ex_wd                      ,
+    input                               ex_wreg                    ,
+    input              [`Reg-1:0]       ex_wdata                   ,
+    output reg         [`Reg_Addr-1:0]  mem_wd                     ,
+    output reg                          mem_wreg                   ,
+    output reg         [`Reg-1:0]       mem_wdata                   
     );
     
     always@(posedge clk)begin

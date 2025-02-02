@@ -9,13 +9,13 @@
 
 
 module mem(
-    input                             rst          ,
-    input         [`Reg_Addr-1:0]     wd_i         ,
-    input                             wreg_i       ,
-    input         [`Reg-1:0]          wdata_i      ,
-    output reg   [`Reg_Addr-1:0]      wd_o        ,
-    output reg                        wreg_o      ,
-    output reg   [`Reg-1:0]           wdata_o
+    input                               rst                        ,
+    input              [`Reg_Addr-1:0]  wd_i                       ,
+    input                               wreg_i                     ,
+    input              [`Reg-1:0]       wdata_i                    ,
+    output reg         [`Reg_Addr-1:0]  wd_o                       ,
+    output reg                          wreg_o                     ,
+    output reg         [`Reg-1:0]       wdata_o                     
     );
     
     always@(*)begin

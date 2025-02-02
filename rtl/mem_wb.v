@@ -1,7 +1,7 @@
 /**************************************
 @ filename    : mem_wb.v
 @ author      : yhykkk
-@ create time : 2025/01/20 
+@ create time : 2025/01/20
 @ version     : v1.0.0
 **************************************/
 `include "define.v"
@@ -9,14 +9,14 @@
 
 
 module mem_wb(
-    input                             rst           ,
-    input                             clk           ,
-    input         [`Reg_Addr-1:0]     mem_wd        ,
-    input                             mem_wreg      ,
-    input         [`Reg-1:0]          mem_wdata     ,
-    output reg   [`Reg_Addr-1:0]      wb_wd         ,
-    output reg                        wb_wreg       ,
-    output reg   [`Reg-1:0]           wb_wdata
+    input                               rst                        ,
+    input                               clk                        ,
+    input              [`Reg_Addr-1:0]  mem_wd                     ,
+    input                               mem_wreg                   ,
+    input              [`Reg-1:0]       mem_wdata                  ,
+    output reg         [`Reg_Addr-1:0]  wb_wd                      ,
+    output reg                          wb_wreg                    ,
+    output reg         [`Reg-1:0]       wb_wdata                    
     );
     
     always@(posedge clk)begin
