@@ -14,6 +14,17 @@ module ID(
     input              [`Inst_Data-1:0] inst_i                     ,//instruction for decoder
     input              [`Reg-1:0]       reg1_data_i                ,//data read in regfile
     input              [`Reg-1:0]       reg2_data_i                ,
+    
+    //write signal from ex stage
+    input                               ex_wreg_i                  ,
+    input              [`Reg_Addr-1:0]  ex_wd_i                    ,
+    input              [`Reg-1:0]       ex_wdata_i                 ,
+
+    //write signal from mem stage
+    input                               mem_wreg_i                 ,
+    input              [`Reg_Addr-1:0]  mem_wd_i                   ,
+    input              [`Reg-1:0]       mem_wdata_i                ,
+
     output reg                          reg1_read_o                ,//read enable for regfile
     output reg                          reg2_read_o                ,
     output reg         [`Reg_Addr-1:0]  reg1_addr_o                ,//read address for regfile
@@ -86,6 +97,10 @@ reg                                     instvalid                  ;
         begin
             if(rst==`Rst_Enable)begin
                 reg1_o = 32'b0;
+            end else if((ex_wreg_i == `Write_Enable) && (reg1_read_o == `Read_Enable) && (ex_wd_i == reg1_addr_o))begin      //read directly from write in ex(RAW conflict1)
+                reg1_o = ex_wdata_i;
+            end else if((mem_wreg_i == `Write_Enable) && (reg1_read_o == `Read_Enable) && (mem_wd_i == reg1_addr_o))begin    //read directly from write in mem(RAW conflict2)
+                reg1_o = mem_wdata_i;
             end else if(reg1_read_o == `Read_Enable)begin
                 reg1_o = reg1_data_i;                         //from register
             end else if(reg1_read_o == `Read_Disable)begin
@@ -99,8 +114,12 @@ reg                                     instvalid                  ;
         begin
             if(rst==`Rst_Enable)begin
                 reg2_o = 32'b0;
+            end else if((ex_wreg_i == `Write_Enable) && (reg2_read_o == `Read_Enable) && (ex_wd_i == reg2_addr_o))begin      //read directly from write in ex(RAW conflict1)
+                reg2_o = ex_wdata_i;
+            end else if((mem_wreg_i == `Write_Enable) && (reg2_read_o == `Read_Enable) && (mem_wd_i == reg2_addr_o))begin    //read directly from write in mem(RAW conflict2)
+                reg2_o = mem_wdata_i;
             end else if(reg2_read_o == `Read_Enable)begin
-                reg2_o = reg1_data_i;
+                reg2_o = reg2_data_i;
             end else if(reg2_read_o == `Read_Disable)begin
                 reg2_o = imm;
             end else begin

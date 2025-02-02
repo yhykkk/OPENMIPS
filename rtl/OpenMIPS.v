@@ -52,12 +52,24 @@ wire                   [`Reg-1:0]       id_reg1_o                  ;
 wire                   [`Reg-1:0]       id_reg2_o                  ;
 wire                   [`Reg_Addr-1:0]  id_wd_o                    ;
 wire                                    id_wreg_o                  ;
+wire                   [`Reg_Addr-1:0]  ex_wd_o                    ;
+wire                                    ex_wreg_o                  ;
+wire                   [`Reg-1:0]       ex_wdata_o                 ;
+wire                   [`Reg_Addr-1:0]  mem_wd_o                   ;
+wire                                    mem_wreg_o                 ;
+wire                   [`Reg-1:0]       mem_wdata_o                ;
     ID ID_inst0(
     .rst                               (rst                       ),
     .pc_i                              (id_pc                     ),//address for decoder
     .inst_i                            (id_inst                   ),//instruction for decoder
     .reg1_data_i                       (id_reg1_data              ),//data read in regfile
     .reg2_data_i                       (id_reg2_data              ),
+    .ex_wreg_i                         (ex_wreg_o                 ),
+    .ex_wd_i                           (ex_wd_o                   ),
+    .ex_wdata_i                        (ex_wdata_o                ),
+    .mem_wreg_i                        (mem_wreg_o                ),
+    .mem_wd_i                          (mem_wd_o                  ),
+    .mem_wdata_i                       (mem_wdata_o               ),
     .reg1_read_o                       (id_re1                    ),//read enable for regfile
     .reg2_read_o                       (id_re2                    ),
     .reg1_addr_o                       (id_reg1_addr              ),//read address for regfile
@@ -116,9 +128,6 @@ wire                                    ex_wreg_i                  ;
     );
     
     //ex
-wire                   [`Reg_Addr-1:0]  ex_wd_o                    ;
-wire                                    ex_wreg_o                  ;
-wire                   [`Reg-1:0]       ex_wdata_o                 ;
     ex ex_inst0(
     .rst                               (rst                       ),
     .alusel_i                          (ex_alusel                 ),
@@ -148,9 +157,6 @@ wire                   [`Reg-1:0]       mem_wdata_i                ;
     );
     
     //mem
-wire                   [`Reg_Addr-1:0]  mem_wd_o                   ;
-wire                                    mem_wreg_o                 ;
-wire                   [`Reg-1:0]       mem_wdata_o                ;
     mem mem_inst0(
     .rst                               (rst                       ),
     .wd_i                              (mem_wd_i                  ),

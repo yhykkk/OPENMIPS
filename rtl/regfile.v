@@ -43,7 +43,7 @@ reg                    [`Reg-1:0] regs [`Reg_Num-1:0]                           
             end else if(raddr1 == `Reg_Zero)begin
                 rdata1 = 32'b0;
             end else if((we == `Write_Enable)&&(raddr1==waddr)&&(re1==`Read_Enable))begin     
-                rdata1 = wdata;                                                                     //use the new written data
+                rdata1 = wdata;                                                                     //use the new written data（RAW conflict with write and read at the same time）
             end else if((re1==`Read_Enable))begin
                 rdata1 = regs[raddr1];
             end else
