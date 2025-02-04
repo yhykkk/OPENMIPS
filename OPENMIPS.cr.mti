@@ -8,6 +8,13 @@ QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
 Top level modules:
 	if_id
 
+} {} {}} {E:/Digital Circuit/OPEN MIPS/rtl/rom.v} {1 {vlog -work work -vopt -stats=none {E:/Digital Circuit/OPEN MIPS/rtl/rom.v}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module rom
+
+Top level modules:
+	rom
+
 } {} {}} {E:/Digital Circuit/OPEN MIPS/rtl/regfile.v} {1 {vlog -work work -vopt -stats=none {E:/Digital Circuit/OPEN MIPS/rtl/regfile.v}
 QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
 -- Compiling module regfile
@@ -36,7 +43,7 @@ QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
 Top level modules:
 	openmips_min_sop_tb
 
-} {} {}} {E:/Digital Circuit/OPEN MIPS/rtl/pc_reg.v} {1 {vlog -work work -vopt -stats=none {E:/Digital Circuit/OPEN MIPS/rtl/pc_reg.v}
+} {} {}} {E:/Digital Circuit/OPEN MIPS/rtl/pc_reg.v} {1 {vlog -work work -vopt -stats=none {E:\Digital Circuit\OPEN MIPS\rtl\pc_reg.v}
 QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
 -- Compiling module pc_reg
 
@@ -57,19 +64,19 @@ QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
 Top level modules:
 	OpenMIPS
 
-} {} {}} {E:/Digital Circuit/OPEN MIPS/rtl/ex.v} {1 {vlog -work work -vopt -stats=none {E:/Digital Circuit/OPEN MIPS/rtl/ex.v}
-QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
--- Compiling module ex
-
-Top level modules:
-	ex
-
 } {} {}} {E:/Digital Circuit/OPEN MIPS/rtl/ID.v} {1 {vlog -work work -vopt -stats=none {E:/Digital Circuit/OPEN MIPS/rtl/ID.v}
 QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
 -- Compiling module ID
 
 Top level modules:
 	ID
+
+} {} {}} {E:/Digital Circuit/OPEN MIPS/rtl/ex.v} {1 {vlog -work work -vopt -stats=none {E:/Digital Circuit/OPEN MIPS/rtl/ex.v}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module ex
+
+Top level modules:
+	ex
 
 } {} {}} {E:/Digital Circuit/OPEN MIPS/rtl/id_ex.v} {1 {vlog -work work -vopt -stats=none {E:/Digital Circuit/OPEN MIPS/rtl/id_ex.v}
 QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017

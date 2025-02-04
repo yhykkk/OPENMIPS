@@ -22,17 +22,48 @@ module ex(
     );
     
 reg                    [`Reg-1:0]       logic_out                  ;
+reg                    [`Reg-1:0]       shift_out                  ;
     
     always@(*)begin
         if(rst==`Rst_Enable)begin
             logic_out = `Zero_Word;
         end else begin
             case(aluop_i)
-                `EXE_OR_OP: begin                                   //ori
+                `EXE_OR_OP: begin                                   //or
                     logic_out = reg1_i | reg2_i;
+                end
+                `EXE_AND_OP: begin                                  //and
+                    logic_out = reg1_i & reg2_i;
+                end
+                `EXE_NOR_OP: begin                                  //nor
+                    logic_out = ~(reg1_i | reg2_i);
+                end
+                `EXE_XOR_OP: begin                                  //xor
+                    logic_out = reg1_i ^ reg2_i;
                 end
                 default : begin
                     logic_out = `Zero_Word;
+                end
+            endcase
+        end
+    end
+
+    always@(*)begin
+        if(rst==`Rst_Enable)begin
+            shift_out = `Zero_Word;
+        end else begin
+            case(aluop_i)
+                `EXE_SLL_OP: begin                                   //sll
+                    shift_out = reg2_i << reg1_i[4:0];
+                end
+                `EXE_SRL_OP: begin                                   //srl
+                    shift_out = reg2_i >> reg1_i[4:0];
+                end
+                `EXE_SRA_OP: begin                                   //srl
+                    shift_out = ({32{reg2_i[31]}}<<(6'd32-{1'b0,reg1_i[4:0]})) | reg2_i >> reg1_i[4:0];
+                end
+                default : begin
+                    shift_out = `Zero_Word;
                 end
             endcase
         end
@@ -44,6 +75,9 @@ reg                    [`Reg-1:0]       logic_out                  ;
         case(alusel_i)
             `EXE_RES_LOGIC:  begin
                 wdata_o = logic_out;
+            end
+            `EXE_RES_SHIFT:  begin
+                wdata_o = shift_out;
             end
             default:  begin
                 wdata_o = `Zero_Word;

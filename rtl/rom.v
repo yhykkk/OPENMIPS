@@ -16,7 +16,7 @@ module rom(
 reg                    [`Inst_Data-1:0] inst_mem [`Num_Inst_Mem-1:0]                           ;
     
     initial begin 
-    $readmemh ("inst_rom1.dat",inst_mem);
+    $readmemh ("inst_rom3.dat",inst_mem);
     $display("Instruction memory initialized.");
     end
 
