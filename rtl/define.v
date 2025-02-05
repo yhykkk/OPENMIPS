@@ -33,29 +33,36 @@
 `define EXE_OR_OP     8'b00100101
 `define EXE_XOR_OP    8'b00100110
 `define EXE_NOR_OP    8'b00100111
-`define EXE_ANDI_OP   8'b00001100           
-`define EXE_ORI_OP    8'b00001101          
-`define EXE_XORI_OP   8'b00001110           
-`define EXE_LUI_OP    8'b00001111    
+`define EXE_ANDI_OP   8'b00001100
+`define EXE_ORI_OP    8'b00001101
+`define EXE_XORI_OP   8'b00001110
+`define EXE_LUI_OP    8'b00001111
 
-`define EXE_SLL_OP    8'b01000000           
-`define EXE_SLLV_OP   8'b00000100           
-`define EXE_SRL_OP    8'b01000010           
-`define EXE_SRLV_OP   8'b00000110          
-`define EXE_SRA_OP    8'b00000011      
-`define EXE_SRAV_OP   8'b00000111    
+`define EXE_SLL_OP    8'b01000000
+`define EXE_SLLV_OP   8'b00000100
+`define EXE_SRL_OP    8'b01000010
+`define EXE_SRLV_OP   8'b00000110
+`define EXE_SRA_OP    8'b00000011
+`define EXE_SRAV_OP   8'b00000111
 
-`define EXE_SYNC_OP   8'b01001111            
-`define EXE_PREF_OP   8'b00110011           
+`define EXE_SYNC_OP   8'b01001111
+`define EXE_PREF_OP   8'b00110011
+
+`define EXE_MOVZ_OP   8'b01001010           
+`define EXE_MOVN_OP   8'b01001011           
+`define EXE_MFHI_OP   8'b00010000           
+`define EXE_MTHI_OP   8'b00010001           
+`define EXE_MFLO_OP   8'b00010010           
+`define EXE_MTLO_OP   8'b00010011           
 
 `define EXE_RES_NOP             3'b000
-`define EXE_RES_LOGIC           3'b001 
+`define EXE_RES_LOGIC           3'b001
 `define EXE_RES_SHIFT           3'b010
 `define EXE_RES_MOVE            3'b011
 `define EXE_RES_ARITHMETIC      3'b100
 `define EXE_RES_MUL             3'b101
 `define EXE_RES_LOAD_STORE      3'b110
-`define EXE_RES_JUMP_BRANCH     3'b111  
+`define EXE_RES_JUMP_BRANCH     3'b111
 
 `define EXE_ORI       6'b001101
 `define EXE_AND       6'b100100
@@ -77,6 +84,13 @@
 `define EXE_SYNC      6'b001111
 `define EXE_PREF      6'b110011
 `define EXE_SPECIAL_INST      6'b000000
+
+`define EXE_MOVZ       6'b001010
+`define EXE_MOVN       6'b001011
+`define EXE_MFHI       6'b010000
+`define EXE_MTHI       6'b010001
+`define EXE_MFLO       6'b010010
+`define EXE_MTLO       6'b010011
 
 
 

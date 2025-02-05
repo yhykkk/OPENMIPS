@@ -146,6 +146,62 @@ reg                                     instvalid                  ;
                                     reg2_read_o = `Read_Enable;
                                     instvalid = `Inst_Valid;
                                 end
+                                `EXE_MFHI : begin
+                                    aluop_o = `EXE_MFHI_OP;
+                                    alusel_o = `EXE_RES_MOVE;
+                                    wreg_o = `Write_Enable;
+                                    reg1_read_o = `Read_Disable;
+                                    reg2_read_o = `Read_Disable;
+                                    instvalid = `Inst_Valid;
+                                end
+                                `EXE_MFLO : begin
+                                    aluop_o = `EXE_MFLO_OP;
+                                    alusel_o = `EXE_RES_MOVE;
+                                    wreg_o = `Write_Enable;
+                                    reg1_read_o = `Read_Disable;
+                                    reg2_read_o = `Read_Disable;
+                                    instvalid = `Inst_Valid;
+                                end
+                                `EXE_MTHI : begin
+                                    aluop_o = `EXE_MTHI_OP;
+                                    alusel_o = `EXE_RES_MOVE;
+                                    wreg_o = `Write_Disable;
+                                    reg1_read_o = `Read_Enable;
+                                    reg2_read_o = `Read_Disable;
+                                    instvalid = `Inst_Valid;
+                                end
+                                `EXE_MTLO : begin
+                                    aluop_o = `EXE_MTLO_OP;
+                                    alusel_o = `EXE_RES_MOVE;
+                                    wreg_o = `Write_Disable;
+                                    reg1_read_o = `Read_Enable;
+                                    reg2_read_o = `Read_Disable;
+                                    instvalid = `Inst_Valid;
+                                end
+                                `EXE_MOVN : begin
+                                    aluop_o = `EXE_MOVN_OP;
+                                    alusel_o = `EXE_RES_MOVE;
+                                    reg1_read_o = `Read_Enable;
+                                    reg2_read_o = `Read_Enable;
+                                    instvalid = `Inst_Valid;
+                                    if(reg2_o != `Zero_Word) begin
+                                        wreg_o = `Write_Enable;
+                                    end else begin
+                                        wreg_o = `Write_Disable;
+                                    end
+                                end
+                                `EXE_MOVZ : begin
+                                    aluop_o = `EXE_MOVZ_OP;
+                                    alusel_o = `EXE_RES_MOVE;
+                                    reg1_read_o = `Read_Enable;
+                                    reg2_read_o = `Read_Enable;
+                                    instvalid = `Inst_Valid;
+                                    if(reg2_o == `Zero_Word) begin
+                                        wreg_o = `Write_Enable;
+                                    end else begin
+                                        wreg_o = `Write_Disable;
+                                    end
+                                end
                                 default : begin
                                 end
                             endcase
