@@ -202,6 +202,70 @@ reg                                     instvalid                  ;
                                         wreg_o = `Write_Disable;
                                     end
                                 end
+                                `EXE_SLT : begin                   //slt,rd,rs,rt
+                                    aluop_o = `EXE_SLT_OP;
+                                    alusel_o = `EXE_RES_ARITHMETIC;
+                                    wreg_o = `Write_Enable;
+                                    reg1_read_o = `Read_Enable;
+                                    reg2_read_o = `Read_Enable;
+                                    instvalid = `Inst_Valid;
+                                end
+                                `EXE_SLTU : begin                   //sltu,rd,rs,rt
+                                    aluop_o = `EXE_SLTU_OP;
+                                    alusel_o = `EXE_RES_ARITHMETIC;
+                                    wreg_o = `Write_Enable;
+                                    reg1_read_o = `Read_Enable;
+                                    reg2_read_o = `Read_Enable;
+                                    instvalid = `Inst_Valid;
+                                end
+                                `EXE_ADD : begin                   //add,rd,rs,rt(overfolow unsaved)
+                                    aluop_o = `EXE_ADD_OP;
+                                    alusel_o = `EXE_RES_ARITHMETIC;
+                                    wreg_o = `Write_Enable;
+                                    reg1_read_o = `Read_Enable;
+                                    reg2_read_o = `Read_Enable;
+                                    instvalid = `Inst_Valid;
+                                end
+                                `EXE_ADDU : begin                   //addu,rd,rs,rt(overfolow not checked)
+                                    aluop_o = `EXE_ADDU_OP;
+                                    alusel_o = `EXE_RES_ARITHMETIC;
+                                    wreg_o = `Write_Enable;
+                                    reg1_read_o = `Read_Enable;
+                                    reg2_read_o = `Read_Enable;
+                                    instvalid = `Inst_Valid;
+                                end
+                                `EXE_SUB : begin                   //sub,rd,rs,rt(overfolow unsaved)
+                                    aluop_o = `EXE_SUB_OP;
+                                    alusel_o = `EXE_RES_ARITHMETIC;
+                                    wreg_o = `Write_Enable;
+                                    reg1_read_o = `Read_Enable;
+                                    reg2_read_o = `Read_Enable;
+                                    instvalid = `Inst_Valid;
+                                end
+                                `EXE_SUBU : begin                   //subu,rd,rs,rt(overfolow not checked)
+                                    aluop_o = `EXE_SUBU_OP;
+                                    alusel_o = `EXE_RES_ARITHMETIC;
+                                    wreg_o = `Write_Enable;
+                                    reg1_read_o = `Read_Enable;
+                                    reg2_read_o = `Read_Enable;
+                                    instvalid = `Inst_Valid;
+                                end
+                                `EXE_MULT : begin                   //mult,rs,rt {hi,lo} = rs*rt
+                                    aluop_o = `EXE_MULT_OP;
+                                    alusel_o = `EXE_RES_ARITHMETIC;
+                                    wreg_o = `Write_Disable;        //result into hi/lo
+                                    reg1_read_o = `Read_Enable;
+                                    reg2_read_o = `Read_Enable;
+                                    instvalid = `Inst_Valid;
+                                end
+                                `EXE_MULTU : begin                   //multu,rs,rt {hi,lo} = rs*rt
+                                    aluop_o = `EXE_MULTU_OP;
+                                    alusel_o = `EXE_RES_ARITHMETIC;
+                                    wreg_o = `Write_Disable;
+                                    reg1_read_o = `Read_Enable;
+                                    reg2_read_o = `Read_Enable;
+                                    instvalid = `Inst_Valid;
+                                end
                                 default : begin
                                 end
                             endcase
@@ -259,6 +323,76 @@ reg                                     instvalid                  ;
                     imm = {16'b0,inst_i[15:0]};
                     instvalid = `Inst_Valid;
                     wd_o = inst_i[20:16];
+                end
+                 `EXE_SLTI: begin                      //slti rt,rs,imm
+                    aluop_o  = `EXE_SLT_OP;
+                    alusel_o = `EXE_RES_ARITHMETIC;
+                    wreg_o   = `Write_Enable;         
+                    reg1_read_o = `Read_Enable;
+                    reg2_read_o = `Read_Disable;
+                    imm = {{16{inst_i[15]}},inst_i[15:0]};
+                    instvalid = `Inst_Valid;
+                    wd_o = inst_i[20:16];
+                end
+                 `EXE_SLTIU: begin                      //sltiu rt,rs,imm
+                    aluop_o  = `EXE_SLTU_OP;            //区别仅为进行无符号比较
+                    alusel_o = `EXE_RES_ARITHMETIC;
+                    wreg_o   = `Write_Enable;         
+                    reg1_read_o = `Read_Enable;
+                    reg2_read_o = `Read_Disable;
+                    imm = {{16{inst_i[15]}},inst_i[15:0]};
+                    instvalid = `Inst_Valid;
+                    wd_o = inst_i[20:16];
+                end
+                 `EXE_ADDI: begin                      //addi rt,rs,imm
+                    aluop_o  = `EXE_ADDI_OP;           
+                    alusel_o = `EXE_RES_ARITHMETIC;
+                    wreg_o   = `Write_Enable;         
+                    reg1_read_o = `Read_Enable;
+                    reg2_read_o = `Read_Disable;
+                    imm = {{16{inst_i[15]}},inst_i[15:0]};
+                    instvalid = `Inst_Valid;
+                    wd_o = inst_i[20:16];
+                end
+                 `EXE_ADDIU: begin                      //addiu rt,rs,imm
+                    aluop_o  = `EXE_ADDIU_OP;           //区别为不进行overflow检测
+                    alusel_o = `EXE_RES_ARITHMETIC;
+                    wreg_o   = `Write_Enable;         
+                    reg1_read_o = `Read_Enable;
+                    reg2_read_o = `Read_Disable;
+                    imm = {{16{inst_i[15]}},inst_i[15:0]};
+                    instvalid = `Inst_Valid;
+                    wd_o = inst_i[20:16];
+                end
+                `EXE_SPECIAL2_INST: begin
+                    case(op3) 
+                       `EXE_CLZ : begin                   //clz,rd,rs (count 0)
+                            aluop_o = `EXE_CLZ_OP;
+                            alusel_o = `EXE_RES_ARITHMETIC;
+                            wreg_o = `Write_Enable;
+                            reg1_read_o = `Read_Enable;
+                            reg2_read_o = `Read_Disable;
+                            instvalid = `Inst_Valid;
+                        end
+                        `EXE_CLO : begin                   //clo,rd,rs (count 1)
+                            aluop_o = `EXE_CLO_OP;
+                            alusel_o = `EXE_RES_ARITHMETIC;
+                            wreg_o = `Write_Enable;
+                            reg1_read_o = `Read_Enable;
+                            reg2_read_o = `Read_Disable;
+                            instvalid = `Inst_Valid;
+                        end
+                        `EXE_MUL : begin                   //mul rd,rs,rt
+                            aluop_o = `EXE_MUL_OP;
+                            alusel_o = `EXE_RES_MUL;
+                            wreg_o = `Write_Enable;        //write into general reg
+                            reg1_read_o = `Read_Enable;
+                            reg2_read_o = `Read_Enable;
+                            instvalid = `Inst_Valid;
+                        end
+                        default : begin  
+                        end        
+                    endcase //end special2
                 end
                 default begin
                 end
