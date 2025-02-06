@@ -17,6 +17,7 @@ module mem_wb(
     input              [`Reg-1:0]       mem_hi                     ,
     input              [`Reg-1:0]       mem_lo                     ,
     input                               mem_whilo                  ,
+    input              [   5:0]         stall                      ,//pause signal from ctrl
     output reg         [`Reg_Addr-1:0]  wb_wd                      ,
     output reg                          wb_wreg                    ,
     output reg         [`Reg-1:0]       wb_wdata                   ,
@@ -33,7 +34,14 @@ module mem_wb(
             wb_hi <= `Zero_Word;
             wb_lo <= `Zero_Word;
             wb_whilo <= `Write_Disable;
-        end else begin
+        end else if(stall[4] == `Stop && stall[5] == `NoStop)begin
+            wb_wd <= `Reg_Zero;
+            wb_wreg <= `Write_Disable;
+            wb_wdata <= `Zero_Word;
+            wb_hi <= `Zero_Word;
+            wb_lo <= `Zero_Word;
+            wb_whilo <= `Write_Disable;
+        end else if(stall[4] == `NoStop)begin
             wb_wd <= mem_wd;
             wb_wreg <= mem_wreg;
             wb_wdata <= mem_wdata;

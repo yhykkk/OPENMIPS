@@ -15,6 +15,7 @@ module id_ex(
     input              [`Reg-1:0]       id_reg2                    ,
     input              [`Reg_Addr-1:0]  id_wd                      ,
     input                               id_wreg                    ,
+    input              [   5:0]         stall                      ,//pause signal from ctrl
     output reg         [`Alu_Sel-1:0]   ex_alusel                  ,
     output reg         [`Alu_Op-1:0]    ex_aluop                   ,
     output reg         [`Reg-1:0]       ex_reg1                    ,
@@ -32,7 +33,14 @@ module id_ex(
                     ex_reg2   <= `Zero_Word;
                     ex_wd     <= `Reg_Zero;
                     ex_wreg   <= `Write_Disable;
-                end else begin
+                end else if(stall[2] == `Stop && stall[3] == `NoStop)begin
+                    ex_alusel <= `EXE_RES_NOP;
+                    ex_aluop  <= `EXE_NOP_OP;
+                    ex_reg1   <= `Zero_Word;
+                    ex_reg2   <= `Zero_Word;
+                    ex_wd     <= `Reg_Zero;
+                    ex_wreg   <= `Write_Disable;
+                end else if(stall[2] == `NoStop)begin
                     ex_alusel <= id_alusel;
                     ex_aluop  <= id_aluop;
                     ex_reg1   <= id_reg1;

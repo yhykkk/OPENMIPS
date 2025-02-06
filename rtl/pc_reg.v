@@ -10,6 +10,7 @@
 module pc_reg(
     input                               rst                        ,
     input                               clk                        ,
+    input              [   5:0]         stall                      ,//pause signal from ctrl
     output reg         [`Inst_Addr-1:0] pc                         ,//address for reading
     output reg                          ce                          //order register enable
     );
@@ -29,7 +30,7 @@ always@(posedge clk)
             pc <= `Zero_Word;                                            //in case ce==1 but rst==0
         end else if(ce == `Chip_Disable)begin
             pc <= `Zero_Word;
-        end else begin
+        end else if(stall[0] == `NoStop)begin
             pc <= pc + 4'd4;
         end
     end

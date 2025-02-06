@@ -34,7 +34,9 @@ module ID(
     output reg         [`Reg-1:0]       reg1_o                     ,//Դ������
     output reg         [`Reg-1:0]       reg2_o                     ,
     output reg         [`Reg_Addr-1:0]  wd_o                       ,//address for aimed register
-    output reg                          wreg_o                      //write enable for aimed register
+    output reg                          wreg_o                     ,//write enable for aimed register
+
+    output reg                          stallreq                    
     );
     
     //get code
@@ -52,6 +54,9 @@ reg                    [`Reg-1:0]       imm                        ;//immediate 
     //inst validity
 reg                                     instvalid                  ;
     
+    always@(*)begin
+        stallreq = `NoStop;
+    end
     //decoding
     always@(*)begin
         if(rst == `Rst_Enable)begin
@@ -386,6 +391,38 @@ reg                                     instvalid                  ;
                             aluop_o = `EXE_MUL_OP;
                             alusel_o = `EXE_RES_MUL;
                             wreg_o = `Write_Enable;        //write into general reg
+                            reg1_read_o = `Read_Enable;
+                            reg2_read_o = `Read_Enable;
+                            instvalid = `Inst_Valid;
+                        end
+                        `EXE_MADD : begin                   //madd rs,rt
+                            aluop_o = `EXE_MADD_OP;         //hilo += rs*rt
+                            alusel_o = `EXE_RES_MUL;
+                            wreg_o = `Write_Disable;        
+                            reg1_read_o = `Read_Enable;
+                            reg2_read_o = `Read_Enable;
+                            instvalid = `Inst_Valid;
+                        end
+                        `EXE_MADDU : begin                  //maddu rs,rt
+                            aluop_o = `EXE_MADDU_OP;        //hilo += rs*rt(unsigned)
+                            alusel_o = `EXE_RES_MUL;
+                            wreg_o = `Write_Disable;        
+                            reg1_read_o = `Read_Enable;
+                            reg2_read_o = `Read_Enable;
+                            instvalid = `Inst_Valid;
+                        end
+                        `EXE_MSUB : begin                  //msub rs,rt
+                            aluop_o = `EXE_MSUB_OP;        //hilo -= rs*rt
+                            alusel_o = `EXE_RES_MUL;
+                            wreg_o = `Write_Disable;        
+                            reg1_read_o = `Read_Enable;
+                            reg2_read_o = `Read_Enable;
+                            instvalid = `Inst_Valid;
+                        end
+                        `EXE_MSUBU : begin                  //msubu rs,rt
+                            aluop_o = `EXE_MSUBU_OP;        //hilo -= rs*rt(unsigned)
+                            alusel_o = `EXE_RES_MUL;
+                            wreg_o = `Write_Disable;        
                             reg1_read_o = `Read_Enable;
                             reg2_read_o = `Read_Enable;
                             instvalid = `Inst_Valid;

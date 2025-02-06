@@ -15,30 +15,7 @@ module OpenMIPS(
     output             [`Reg-1:0]       rom_addr_o                 ,//aimed instruction reg        
     output                              rom_ce_o                    
     );
-    
-    //pc
-wire                   [`Inst_Addr-1:0] pc                         ;
-    pc_reg pc_reg_inst0(
-    .rst                               (rst                       ),
-    .clk                               (clk                       ),
-    .pc                                (pc                        ),//address for reading
-    .ce                                (rom_ce_o                  ) //order register enable
-    );
 
-    assign rom_addr_o = pc;
-    
-    //if_id
-wire                   [`Inst_Addr-1:0] id_pc                      ;
-wire                   [`Inst_Data-1:0] id_inst                    ;
-    if_id if_id_inst0(
-    .rst                               (rst                       ),
-    .clk                               (clk                       ),
-    .if_pc                             (pc                        ),//address for instr
-    .if_inst                           (rom_data_i                ),//instr
-    .id_pc                             (id_pc                     ),//output address for instr
-    .id_inst                           (id_inst                   ) //output instr
-    );
-    
 //write data pushing ahead
 wire                   [`Reg-1:0]       id_reg1_data               ;
 wire                   [`Reg-1:0]       id_reg2_data               ;
@@ -73,6 +50,40 @@ wire                   [`Reg-1:0]       ex_lo                      ;
 wire                                    mem_whilo_i                ;
 wire                   [`Reg-1:0]       mem_hi_i                   ;
 wire                   [`Reg-1:0]       mem_lo_i                   ;
+//stall signal
+wire                                    stallreq_from_id           ;
+wire                                    stallreq_from_ex           ;
+wire                   [   5:0]         stall                      ;
+wire                   [`Reg_Double-1:0]hilo_ex                    ;
+wire                   [   1:0]         cnt_ex                     ;
+wire                   [`Reg_Double-1:0]hilo_mem                   ;
+wire                   [   1:0]         cnt_mem                    ;
+    
+    //pc
+wire                   [`Inst_Addr-1:0] pc                         ;
+    pc_reg pc_reg_inst0(
+    .rst                               (rst                       ),
+    .clk                               (clk                       ),
+    .pc                                (pc                        ),//address for reading
+    .ce                                (rom_ce_o                  ),//order register enable
+    .stall                             (stall                     ) 
+    );
+
+    assign rom_addr_o = pc;
+    
+    //if_id
+wire                   [`Inst_Addr-1:0] id_pc                      ;
+wire                   [`Inst_Data-1:0] id_inst                    ;
+    if_id if_id_inst0(
+    .rst                               (rst                       ),
+    .clk                               (clk                       ),
+    .if_pc                             (pc                        ),//address for instr
+    .if_inst                           (rom_data_i                ),//instr
+    .id_pc                             (id_pc                     ),//output address for instr
+    .id_inst                           (id_inst                   ),//output instr
+    .stall                             (stall                     ) 
+    );
+    
     //id
     ID ID_inst0(
     .rst                               (rst                       ),
@@ -95,7 +106,8 @@ wire                   [`Reg-1:0]       mem_lo_i                   ;
     .reg1_o                            (id_reg1_o                 ),//Դ������
     .reg2_o                            (id_reg2_o                 ),
     .wd_o                              (id_wd_o                   ),//address for aimed register
-    .wreg_o                            (id_wreg_o                 ) //write enable for aimed register
+    .wreg_o                            (id_wreg_o                 ),//write enable for aimed register
+    .stallreq                          (stallreq_from_id          ) 
     );
     
     //regfile
@@ -140,7 +152,8 @@ wire                                    ex_wreg_i                  ;
     .ex_reg1                           (ex_reg1_i                 ),
     .ex_reg2                           (ex_reg2_i                 ),
     .ex_wd                             (ex_wd_i                   ),
-    .ex_wreg                           (ex_wreg_i                 ) 
+    .ex_wreg                           (ex_wreg_i                 ),
+    .stall                             (stall                     ) 
     );
     
     //ex
@@ -165,7 +178,12 @@ wire                                    ex_wreg_i                  ;
     .wb_lo_i                           (wb_lo                     ),
     .whilo_o                           (ex_whilo                  ),
     .hi_o                              (ex_hi                     ),
-    .lo_o                              (ex_lo                     ) 
+    .lo_o                              (ex_lo                     ),
+    .stallreq                          (stallreq_from_ex          ),
+    .cnt_i                             (cnt_mem                   ),
+    .hilo_temp_i                       (hilo_mem                  ),
+    .cnt_o                             (cnt_ex                    ),
+    .hilo_temp_o                       (hilo_ex                   ) 
     );
     
     //ex_mem
@@ -186,7 +204,12 @@ wire                   [`Reg-1:0]       mem_wdata_i                ;
     .ex_whilo                          (ex_whilo                  ),
     .mem_hi                            (mem_hi_i                  ),
     .mem_lo                            (mem_lo_i                  ),
-    .mem_whilo                         (mem_whilo_i               ) 
+    .mem_whilo                         (mem_whilo_i               ),
+    .stall                             (stall                     ),
+    .cnt_i                             (cnt_ex                    ),
+    .hilo_i                            (hilo_ex                   ),
+    .cnt_o                             (cnt_mem                   ),
+    .hilo_o                            (hilo_mem                  )
     );
     
     //mem
@@ -221,7 +244,8 @@ wire                   [`Reg-1:0]       mem_wdata_i                ;
     .mem_whilo                         (mem_whilo                 ),
     .wb_hi                             (wb_hi                     ),
     .wb_lo                             (wb_lo                     ),
-    .wb_whilo                          (wb_whilo                  ) 
+    .wb_whilo                          (wb_whilo                  ),
+    .stall                             (stall                     ) 
     );
 
     hilo_reg hilo_reg_inst0(
@@ -233,5 +257,13 @@ wire                   [`Reg-1:0]       mem_wdata_i                ;
     .hi_o                              (hi_o                      ),
     .lo_o                              (lo_o                      ) 
     );
+
+    ctrl ctrl_inst0(
+    .rst                               (rst                       ),
+    .stallreq_from_id                  (stallreq_from_id          ),
+    .stallreq_from_ex                  (stallreq_from_ex          ),
+    .stall                             (stall                     ) 
+    );
+    
     
 endmodule

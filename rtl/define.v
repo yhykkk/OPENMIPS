@@ -26,6 +26,9 @@
 
 `define Zero_Word     32'b0
 
+`define Stop          1'b1
+`define NoStop        1'b0
+
 /***************** instruction defination ********************/
 // LOGIC
 `define EXE_NOP_OP    8'b00000000
@@ -69,7 +72,12 @@
 `define EXE_CLO_OP      8'b00100001           
 `define EXE_MULT_OP     8'b00011000           
 `define EXE_MULTU_OP    8'b00011001           
-`define EXE_MUL_OP      8'b00000010          
+`define EXE_MUL_OP      8'b00000010  
+// MADD
+`define EXE_MADD_OP     8'b10000000           
+`define EXE_MADDU_OP    8'b01000001          
+`define EXE_MSUB_OP     8'b01000100           
+`define EXE_MSUBU_OP    8'b00000101         
 
 `define EXE_RES_NOP             3'b000
 `define EXE_RES_LOGIC           3'b001
@@ -79,7 +87,7 @@
 `define EXE_RES_MUL             3'b101
 `define EXE_RES_LOAD_STORE      3'b110
 `define EXE_RES_JUMP_BRANCH     3'b111
-
+//logic
 `define EXE_ORI       6'b001101
 `define EXE_AND       6'b100100
 `define EXE_OR        6'b100101
@@ -89,7 +97,7 @@
 `define EXE_ORI       6'b001101
 `define EXE_XORI      6'b001110
 `define EXE_LUI       6'b001111
-
+//shift
 `define EXE_SLL       6'b000000
 `define EXE_SLLV      6'b000100
 `define EXE_SRL       6'b000010
@@ -102,14 +110,14 @@
 `define EXE_SPECIAL_INST      6'b000000
 `define EXE_REGIMM_INST       6'b000001
 `define EXE_SPECIAL2_INST     6'b011100
-
+//move
 `define EXE_MOVZ       6'b001010
 `define EXE_MOVN       6'b001011
 `define EXE_MFHI       6'b010000
 `define EXE_MTHI       6'b010001
 `define EXE_MFLO       6'b010010
 `define EXE_MTLO       6'b010011
-
+//arithmatic
 `define EXE_SLT         6'b101010             
 `define EXE_SLTU        6'b101011             
 `define EXE_SLTI        6'b001010            
@@ -124,7 +132,12 @@
 `define EXE_CLO         6'b100001          
 `define EXE_MULT        6'b011000             
 `define EXE_MULTU       6'b011001            
-`define EXE_MUL         6'b000010            
+`define EXE_MUL         6'b000010 
+//madd
+`define EXE_MADD        6'b000000             
+`define EXE_MADDU       6'b000001            
+`define EXE_MSUB        6'b000100             
+`define EXE_MSUBU       6'b000101             
 
 /***************** instruction rom defination ********************/
 `define Inst_Addr     32
