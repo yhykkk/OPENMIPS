@@ -58,6 +58,14 @@ wire                   [`Reg_Double-1:0]hilo_ex                    ;
 wire                   [   1:0]         cnt_ex                     ;
 wire                   [`Reg_Double-1:0]hilo_mem                   ;
 wire                   [   1:0]         cnt_mem                    ;
+//div signal
+wire                   [`Reg_Double-1:0]div_result                 ;
+wire                                    div_ready                  ;
+wire                   [   1:0]         cnt                        ;
+wire                   [`Reg-1:0]       div_opdata1                ;
+wire                   [`Reg-1:0]       div_opdata2                ;
+wire                                    div_start                  ;
+wire                                    signed_div                 ;
     
     //pc
 wire                   [`Inst_Addr-1:0] pc                         ;
@@ -183,7 +191,13 @@ wire                                    ex_wreg_i                  ;
     .cnt_i                             (cnt_mem                   ),
     .hilo_temp_i                       (hilo_mem                  ),
     .cnt_o                             (cnt_ex                    ),
-    .hilo_temp_o                       (hilo_ex                   ) 
+    .hilo_temp_o                       (hilo_ex                   ),
+    .div_result_i                      (div_result                ),
+    .div_ready_i                       (div_ready                 ),
+    .div_opdata1_o                     (div_opdata1               ),
+    .div_opdata2_o                     (div_opdata2               ),
+    .div_start_o                       (div_start                 ),
+    .signed_div_o                      (signed_div                ) 
     );
     
     //ex_mem
@@ -264,6 +278,19 @@ wire                   [`Reg-1:0]       mem_wdata_i                ;
     .stallreq_from_ex                  (stallreq_from_ex          ),
     .stall                             (stall                     ) 
     );
+
+    div div_inst0(
+    .clk                               (clk                       ),
+    .rst                               (rst                       ),
+    .signed_div_i                      (signed_div                ),
+    .opdata1_i                         (div_opdata1               ),
+    .opdata2_i                         (div_opdata2               ),
+    .start_i                           (div_start                 ),
+    .annul_i                           (1'b0                      ),
+    .result_o                          (div_result                ),
+    .ready_o                           (div_ready                 ) 
+    );
+    
     
     
 endmodule

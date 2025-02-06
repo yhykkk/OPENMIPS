@@ -28,6 +28,9 @@ module ex(
     //signal for madd
     input              [`Reg_Double-1:0]hilo_temp_i                ,
     input              [   1:0]         cnt_i                      ,
+    //signal for div
+    input              [`Reg_Double-1:0]div_result_i               ,
+    input                               div_ready_i                ,
     output reg         [`Reg_Addr-1:0]  wd_o                       ,
     output reg                          wreg_o                     ,
     output reg         [`Reg-1:0]       wdata_o                    ,
@@ -38,7 +41,11 @@ module ex(
     //signal for madd
     output reg                          stallreq                   ,
     output reg         [`Reg_Double-1:0]hilo_temp_o                ,
-    output reg         [   1:0]         cnt_o                       
+    output reg         [   1:0]         cnt_o                      ,
+    output reg         [`Reg-1:0]       div_opdata1_o              ,
+    output reg         [`Reg-1:0]       div_opdata2_o              ,
+    output reg                          div_start_o                ,
+    output reg                          signed_div_o           
     );
     
 reg                    [`Reg-1:0]       logic_out                  ;
@@ -60,6 +67,7 @@ wire                   [`Reg-1:0]       opdata2_mult               ;
 wire                   [`Reg_Double-1:0]hilo_temp                  ;//multi result temp
 reg                    [`Reg_Double-1:0]hilo_temp1                 ;
 reg                                     stallreq_for_madd_msubb    ;
+reg                                     stallreq_for_div           ;
 
 
 //variable process 
@@ -169,7 +177,7 @@ assign reg1_i_not = ~reg1_i;
     end
 
     always@(*)begin
-        stallreq = stallreq_for_madd_msubb;
+        stallreq = stallreq_for_madd_msubb || stallreq_for_div;
     end
 
     always@(*)begin
@@ -216,10 +224,76 @@ assign reg1_i_not = ~reg1_i;
 
     always@(*)begin
         if(rst == `Rst_Enable)begin
+            stallreq_for_div = `NoStop;
+            div_opdata1_o = `Zero_Word;
+            div_opdata2_o = `Zero_Word;
+            div_start_o = `DivStop;
+            signed_div_o = 1'b0;
+        end else begin
+            stallreq_for_div = `NoStop;
+            div_opdata1_o = `Zero_Word;
+            div_opdata2_o = `Zero_Word;
+            div_start_o = `DivStop;
+            signed_div_o = 1'b0;
+            case(aluop_i)
+                `EXE_DIV_OP:begin
+                    if(div_result_i == `DivResultNotReady)begin       //div start
+                        stallreq_for_div = `Stop;
+                        div_opdata1_o = reg1_i;
+                        div_opdata2_o = reg2_i;
+                        div_start_o = `DivStart;
+                        signed_div_o = 1'b1;
+                    end else if(div_result_i == `DivResultReady)begin //div stop
+                        stallreq_for_div = `NoStop;
+                        div_opdata1_o = reg1_i;
+                        div_opdata2_o = reg2_i;
+                        div_start_o = `DivStop;
+                        signed_div_o = 1'b1;
+                    end else begin
+                        stallreq_for_div = `NoStop;
+                        div_opdata1_o = `Zero_Word;
+                        div_opdata2_o = `Zero_Word;
+                        div_start_o = `DivStop;
+                        signed_div_o = 1'b0;
+                    end
+                end
+                `EXE_DIVU_OP:begin
+                    if(div_result_i == `DivResultNotReady)begin       //div start
+                        stallreq_for_div = `Stop;
+                        div_opdata1_o = reg1_i;
+                        div_opdata2_o = reg2_i;
+                        div_start_o = `DivStart;
+                        signed_div_o = 1'b0;
+                    end else if(div_result_i == `DivResultReady)begin //div stop
+                        stallreq_for_div = `NoStop;
+                        div_opdata1_o = reg1_i;
+                        div_opdata2_o = reg2_i;
+                        div_start_o = `DivStop;
+                        signed_div_o = 1'b0;
+                    end else begin
+                        stallreq_for_div = `NoStop;
+                        div_opdata1_o = `Zero_Word;
+                        div_opdata2_o = `Zero_Word;
+                        div_start_o = `DivStop;
+                        signed_div_o = 1'b0;
+                    end 
+                    end
+                default :begin
+                end
+            endcase           
+        end
+    end
+
+    always@(*)begin
+        if(rst == `Rst_Enable)begin
             whilo_o = `Write_Disable;
             hi_o = `Zero_Word;
             lo_o = `Zero_Word;
-        end else if((aluop_i == `EXE_MSUB_OP) || (aluop_i == `EXE_MSUBU_OP))begin  //write into hilo reg
+        end else if((aluop_i == `EXE_DIV_OP) || (aluop_i == `EXE_DIVU_OP))begin  //write into hilo reg
+            whilo_o = `Write_Enable;
+            hi_o = div_result_i[63:32];
+            lo_o = div_result_i[31:0];
+        end else if((aluop_i == `EXE_MSUB_OP) || (aluop_i == `EXE_MSUBU_OP))begin  
             whilo_o = `Write_Enable;
             hi_o = hilo_temp1[63:32];
             lo_o = hilo_temp1[31:0];

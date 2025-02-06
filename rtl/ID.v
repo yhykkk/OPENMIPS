@@ -271,6 +271,20 @@ reg                                     instvalid                  ;
                                     reg2_read_o = `Read_Enable;
                                     instvalid = `Inst_Valid;
                                 end
+                                `EXE_DIV : begin                   //div,rs,rt 
+                                    aluop_o = `EXE_DIV_OP;
+                                    wreg_o = `Write_Disable;
+                                    reg1_read_o = `Read_Enable;
+                                    reg2_read_o = `Read_Enable;
+                                    instvalid = `Inst_Valid;
+                                end
+                                `EXE_DIVU : begin                  //divu,rs,rt 
+                                    aluop_o = `EXE_DIVU_OP;
+                                    wreg_o = `Write_Disable;
+                                    reg1_read_o = `Read_Enable;
+                                    reg2_read_o = `Read_Enable;
+                                    instvalid = `Inst_Valid;
+                                end
                                 default : begin
                                 end
                             endcase
