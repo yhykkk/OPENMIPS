@@ -16,12 +16,18 @@ module id_ex(
     input              [`Reg_Addr-1:0]  id_wd                      ,
     input                               id_wreg                    ,
     input              [   5:0]         stall                      ,//pause signal from ctrl
+    input              [`Reg-1:0]       id_link_addr               ,//save inst
+    input                               id_is_in_delayslot         ,
+    input                               next_inst_in_delayslot_i   ,
     output reg         [`Alu_Sel-1:0]   ex_alusel                  ,
     output reg         [`Alu_Op-1:0]    ex_aluop                   ,
     output reg         [`Reg-1:0]       ex_reg1                    ,
     output reg         [`Reg-1:0]       ex_reg2                    ,
     output reg         [`Reg_Addr-1:0]  ex_wd                      ,
-    output reg                          ex_wreg                     
+    output reg                          ex_wreg                    ,
+    output reg         [`Reg-1:0]       ex_link_addr               ,
+    output reg                          ex_is_in_delayslot         ,
+    output reg                          is_in_delayslot_o           
         );
         
         always@(posedge clk)
@@ -33,6 +39,9 @@ module id_ex(
                     ex_reg2   <= `Zero_Word;
                     ex_wd     <= `Reg_Zero;
                     ex_wreg   <= `Write_Disable;
+                    ex_link_addr <= `Zero_Word;
+                    ex_is_in_delayslot <= `NotInDelaySlot;
+                    is_in_delayslot_o <= `NotInDelaySlot;
                 end else if(stall[2] == `Stop && stall[3] == `NoStop)begin
                     ex_alusel <= `EXE_RES_NOP;
                     ex_aluop  <= `EXE_NOP_OP;
@@ -40,6 +49,9 @@ module id_ex(
                     ex_reg2   <= `Zero_Word;
                     ex_wd     <= `Reg_Zero;
                     ex_wreg   <= `Write_Disable;
+                    ex_link_addr <= `Zero_Word;
+                    ex_is_in_delayslot <= `NotInDelaySlot;
+                    is_in_delayslot_o <= `NotInDelaySlot;
                 end else if(stall[2] == `NoStop)begin
                     ex_alusel <= id_alusel;
                     ex_aluop  <= id_aluop;
@@ -47,6 +59,9 @@ module id_ex(
                     ex_reg2   <= id_reg2;
                     ex_wd     <= id_wd;
                     ex_wreg   <= id_wreg;
+                    ex_link_addr <= id_link_addr;
+                    ex_is_in_delayslot <= id_is_in_delayslot;
+                    is_in_delayslot_o <= next_inst_in_delayslot_i;
                 end
             end
 endmodule

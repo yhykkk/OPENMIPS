@@ -66,6 +66,14 @@ wire                   [`Reg-1:0]       div_opdata1                ;
 wire                   [`Reg-1:0]       div_opdata2                ;
 wire                                    div_start                  ;
 wire                                    signed_div                 ;
+wire                                    is_in_delayslot            ;
+wire                                    branch_flag                ;
+wire                                    id_is_in_delayslot         ;
+wire                                    next_inst_in_delayslot     ;
+wire                   [`Inst_Addr-1:0] branch_target_addr         ;
+wire                   [`Inst_Addr-1:0] id_link_addr               ;
+wire                   [`Inst_Addr-1:0] ex_link_addr               ;
+wire                                    ex_is_in_delayslot         ;
     
     //pc
 wire                   [`Inst_Addr-1:0] pc                         ;
@@ -74,7 +82,9 @@ wire                   [`Inst_Addr-1:0] pc                         ;
     .clk                               (clk                       ),
     .pc                                (pc                        ),//address for reading
     .ce                                (rom_ce_o                  ),//order register enable
-    .stall                             (stall                     ) 
+    .stall                             (stall                     ),
+    .branch_flag_i                     (branch_flag               ),
+    .branch_target_addr_i              (branch_target_addr        ) 
     );
 
     assign rom_addr_o = pc;
@@ -115,7 +125,13 @@ wire                   [`Inst_Data-1:0] id_inst                    ;
     .reg2_o                            (id_reg2_o                 ),
     .wd_o                              (id_wd_o                   ),//address for aimed register
     .wreg_o                            (id_wreg_o                 ),//write enable for aimed register
-    .stallreq                          (stallreq_from_id          ) 
+    .stallreq                          (stallreq_from_id          ),
+    .is_in_delayslot_i                 (is_in_delayslot           ),
+    .branch_flag_o                     (branch_flag               ),
+    .is_in_delayslot_o                 (id_is_in_delayslot        ),
+    .next_inst_in_delayslot_o          (next_inst_in_delayslot    ),
+    .branch_target_addr_o              (branch_target_addr        ),
+    .link_addr_o                       (id_link_addr              ) 
     );
     
     //regfile
@@ -161,7 +177,13 @@ wire                                    ex_wreg_i                  ;
     .ex_reg2                           (ex_reg2_i                 ),
     .ex_wd                             (ex_wd_i                   ),
     .ex_wreg                           (ex_wreg_i                 ),
-    .stall                             (stall                     ) 
+    .stall                             (stall                     ),
+    .id_link_addr                      (id_link_addr              ),
+    .id_is_in_delayslot                (id_is_in_delayslot        ),
+    .next_inst_in_delayslot_i          (next_inst_in_delayslot    ),
+    .is_in_delayslot_o                 (is_in_delayslot           ),
+    .ex_link_addr                      (ex_link_addr              ),
+    .ex_is_in_delayslot                (ex_is_in_delayslot        ) 
     );
     
     //ex
@@ -197,7 +219,9 @@ wire                                    ex_wreg_i                  ;
     .div_opdata1_o                     (div_opdata1               ),
     .div_opdata2_o                     (div_opdata2               ),
     .div_start_o                       (div_start                 ),
-    .signed_div_o                      (signed_div                ) 
+    .signed_div_o                      (signed_div                ),
+    .link_addr_i                       (ex_link_addr              ),
+    .is_in_delayslot_i                 (ex_is_in_delayslot        ) 
     );
     
     //ex_mem

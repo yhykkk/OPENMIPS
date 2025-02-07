@@ -11,6 +11,8 @@ module pc_reg(
     input                               rst                        ,
     input                               clk                        ,
     input              [   5:0]         stall                      ,//pause signal from ctrl
+    input                               branch_flag_i              ,//wether branch
+    input              [`Reg-1:0]       branch_target_addr_i       ,//target addr
     output reg         [`Inst_Addr-1:0] pc                         ,//address for reading
     output reg                          ce                          //order register enable
     );
@@ -31,7 +33,11 @@ always@(posedge clk)
         end else if(ce == `Chip_Disable)begin
             pc <= `Zero_Word;
         end else if(stall[0] == `NoStop)begin
-            pc <= pc + 4'd4;
+            if(branch_flag_i == `Branch)begin
+                pc <= branch_target_addr_i;
+            end else begin
+                pc <= pc + 4'd4;
+            end
         end
     end
 endmodule

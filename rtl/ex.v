@@ -31,6 +31,9 @@ module ex(
     //signal for div
     input              [`Reg_Double-1:0]div_result_i               ,
     input                               div_ready_i                ,
+    //branch
+    input              [`Reg-1:0]       link_addr_i                ,
+    input                               is_in_delayslot_i          ,
     output reg         [`Reg_Addr-1:0]  wd_o                       ,
     output reg                          wreg_o                     ,
     output reg         [`Reg-1:0]       wdata_o                    ,
@@ -407,6 +410,9 @@ end
             end
             `EXE_RES_MUL: begin
                 wdata_o = mul_out[31:0];
+            end
+            `EXE_RES_JUMP_BRANCH: begin
+                wdata_o = link_addr_i;
             end
             default:  begin
                 wdata_o = `Zero_Word;

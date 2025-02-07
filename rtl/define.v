@@ -6,28 +6,34 @@
 **************************************/
 
 /***************** global defination ********************/
-`define Rst_Enable    1'b0
-`define Rst_Disable   1'b1
+`define Rst_Enable     1'b0
+`define Rst_Disable    1'b1
 
-`define Chip_Enable   1'b1
-`define Chip_Disable  1'b0
+`define Chip_Enable    1'b1
+`define Chip_Disable   1'b0
 
-`define Write_Enable  1'b1
+`define Write_Enable   1'b1
 `define Write_Disable 1'b0
 
 `define Read_Enable   1'b1
-`define Read_Disable  1'b0                                          //此处Disable有时也指从reg0读取
+`define Read_Disable   1'b0                                          //此处Disable有时也指从reg0读取
 
-`define Alu_Op        8
-`define Alu_Sel       3
+`define Alu_Op         8
+`define Alu_Sel        3
 
-`define Inst_Valid    1'b1
-`define Inst_Invalid  1'b0
+`define Inst_Valid     1'b1
+`define Inst_Invalid   1'b0
 
-`define Zero_Word     32'b0
+`define Zero_Word      32'b0
 
-`define Stop          1'b1
-`define NoStop        1'b0
+`define Stop           1'b1
+`define NoStop         1'b0
+
+`define Branch         1'b1
+`define NotBranch      1'b0
+
+`define InDelaySlot    1'b1
+`define NotInDelaySlot 1'b0
 
 //DIV
 `define DivFree           2'b00
@@ -38,9 +44,21 @@
 `define DivResultNotReady 1'b0
 `define DivStart          1'b1
 `define DivStop           1'b0
-
-
+     
 /***************** instruction defination ********************/
+//BRANCH
+`define EXE_J           6'b000010             
+`define EXE_JAL         6'b000011             
+`define EXE_JALR        6'b001001            
+`define EXE_JR          6'b001000           
+`define EXE_BEQ         6'b000100            
+`define EXE_BGEZ        5'b00001              
+`define EXE_BGEZAL      5'b10001             
+`define EXE_BGTZ        6'b000111            
+`define EXE_BLEZ        6'b000110             
+`define EXE_BLTZ        5'b00000             
+`define EXE_BLTZAL      5'b10000             
+`define EXE_BNE         6'b000101     
 // LOGIC
 `define EXE_NOP_OP    8'b00000000
 `define EXE_AND_OP    8'b00100100
@@ -91,7 +109,20 @@
 `define EXE_MSUBU_OP    8'b00000101 
 //DIV
 `define EXE_DIV_OP      8'b00011010         
-`define EXE_DIVU_OP     8'b00011011          
+`define EXE_DIVU_OP     8'b00011011  
+//BRANCH
+`define EXE_JR_OP       8'b01001000        
+`define EXE_JALR_OP     8'b01001001          
+`define EXE_J_OP        8'b10000010           
+`define EXE_JAL_OP      8'b01000011         
+`define EXE_BEQ_OP      8'b10000100         
+`define EXE_BGTZ_OP     8'b01000111         
+`define EXE_BLEZ_OP     8'b01000110         
+`define EXE_BNE_OP      8'b01000101          
+`define EXE_BGEZ_OP     8'b00000001          
+`define EXE_BGEZAL_OP   8'b01010001          
+`define EXE_BLTZ_OP     8'b11000000          
+`define EXE_BLTZAL_OP   8'b01010000           
 
 `define EXE_RES_NOP             3'b000
 `define EXE_RES_LOGIC           3'b001
