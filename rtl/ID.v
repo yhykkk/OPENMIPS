@@ -839,6 +839,23 @@ assign imm_sll2_signedext = { {14{inst_i[15]}}, inst_i[15:0], 2'b00};
                     instvalid = `Inst_Valid;
                 end
             end
+            if(inst_i[31:21] == 11'b01000000000 && inst_i[10:0] == 11'b0) begin
+                aluop_o = `EXE_MFC0_OP;
+                alusel_o = `EXE_RES_MOVE;
+                wreg_o = `Write_Enable;
+                reg1_read_o = `Read_Disable;
+                reg2_read_o = `Read_Disable;
+                wd_o = inst_i[20:16];  
+                instvalid = `Inst_Valid;
+            end else if(inst_i[31:21] == 11'b01000000100 && inst_i[10:0] == 11'b0) begin
+                aluop_o = `EXE_MTC0_OP;
+                alusel_o = `EXE_RES_MOVE;
+                wreg_o = `Write_Disable;
+                reg1_read_o = `Read_Enable;
+                reg2_read_o = `Read_Disable;
+                reg1_addr_o = inst_i[20:16];  
+                instvalid = `Inst_Valid;
+            end    
         end
     end
     

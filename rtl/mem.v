@@ -23,6 +23,9 @@ module mem(
     input                               llbit_i                    ,
     input                               wb_llbit_we_i              ,
     input                               wb_llbit_value_i           ,
+    input                               cp0_reg_we_i               ,
+    input              [   4:0]         cp0_reg_write_addr_i       ,
+    input              [`Reg-1:0]       cp0_reg_data_i             ,
     output reg         [`Reg_Addr-1:0]  wd_o                       ,
     output reg                          wreg_o                     ,
     output reg         [`Reg-1:0]       wdata_o                    ,
@@ -35,7 +38,10 @@ module mem(
     output reg         [`Reg-1:0]       mem_data_o                 ,//data write
     output reg                          mem_ce_o                   ,
     output reg                          llbit_we_o                 ,
-    output reg                          llbit_value_o            
+    output reg                          llbit_value_o              ,
+    output reg                          cp0_reg_we_o               ,
+    output reg         [   4:0]         cp0_reg_write_addr_o       ,
+    output reg         [`Reg-1:0]       cp0_reg_data_o              
     );
     
 wire                   [`Reg-1:0]       zero32                     ;
@@ -68,6 +74,9 @@ assign zero32 = `Zero_Word;
             mem_ce_o = `Chip_Disable;
             llbit_we_o = `Write_Disable;
             llbit_value_o = 1'b0;
+            cp0_reg_data_o = `Zero_Word;
+            cp0_reg_we_o = `Write_Disable;
+            cp0_reg_write_addr_o = 5'b0;
         end else begin
             wd_o = wd_i;
             wreg_o = wreg_i;
@@ -82,6 +91,9 @@ assign zero32 = `Zero_Word;
             mem_ce_o = `Chip_Disable;
             llbit_we_o = `Write_Disable;
             llbit_value_o = 1'b0;
+            cp0_reg_data_o = cp0_reg_data_i;
+            cp0_reg_we_o = cp0_reg_we_i;
+            cp0_reg_write_addr_o = cp0_reg_write_addr_i;
             case(aluop_i)
                 `EXE_LB_OP: begin
                     mem_addr_o = mem_addr_i;

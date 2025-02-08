@@ -44,6 +44,10 @@
 `define DivResultNotReady 1'b0
 `define DivStart          1'b1
 `define DivStop           1'b0
+
+//INTERRUPT
+`define InterruptAssert    1'b1
+`define InterruptNotAssert  1'b0
      
 /***************** instruction defination ********************/
 //BRANCH
@@ -138,7 +142,10 @@
 `define EXE_SWR_OP      8'b00101110
 //LL & SC
 `define EXE_LL_OP       8'b00110000
-`define EXE_SC_OP       8'b00111000           
+`define EXE_SC_OP       8'b00111000 
+//CP0
+`define EXE_MFC0_OP     8'b01011101         
+`define EXE_MTC0_OP     8'b11100000          
 
 `define EXE_RES_NOP             3'b000
 `define EXE_RES_LOGIC           3'b001
@@ -230,4 +237,11 @@
 `define No_Addr       32'b0
 `define Reg_Double    64
 `define Byte_Width    8
-/***************** regfile defination ********************/
+/***************** cp0 defination ********************/
+`define CP0_REG_COUNT   5'b01001
+`define CP0_REG_COMPARE 5'b01011 
+`define CP0_REG_STATUS  5'b01100 
+`define CP0_REG_CAUSE   5'b01101 
+`define CP0_REG_EPC     5'b01110 
+`define CP0_REG_PRID    5'b01111 
+`define CP0_REG_CONFIG  5'b10000

@@ -35,6 +35,14 @@ module ex(
     input              [`Reg-1:0]       link_addr_i                ,
     input                               is_in_delayslot_i          ,
     input              [`Inst_Addr-1:0] inst_i                     ,
+    //cp0
+    input              [`Reg-1:0]       cp0_reg_data_i             ,
+    input                               mem_cp0_reg_we             ,
+    input              [   4:0]         mem_cp0_reg_write_addr     ,
+    input              [`Reg-1:0]       mem_cp0_reg_data           ,
+    input                               wb_cp0_reg_we              ,
+    input              [   4:0]         wb_cp0_reg_write_addr      ,
+    input              [`Reg-1:0]       wb_cp0_reg_data            ,
     output reg         [`Reg_Addr-1:0]  wd_o                       ,
     output reg                          wreg_o                     ,
     output reg         [`Reg-1:0]       wdata_o                    ,
@@ -52,7 +60,11 @@ module ex(
     output reg                          signed_div_o               ,
     output reg         [`Alu_Op-1:0]    aluop_o                    ,
     output reg         [`Reg-1:0]       mem_addr_o                 ,//addr for saving
-    output reg         [`Reg-1:0]       reg2_o                      //store data
+    output reg         [`Reg-1:0]       reg2_o                     ,//store data
+    output reg         [   4:0]         cp0_reg_read_addr          ,
+    output reg                          cp0_reg_we_o               ,
+    output reg         [   4:0]         cp0_reg_write_addr_o       ,
+    output reg         [`Reg-1:0]       cp0_reg_data_o              
     );
     
 reg                    [`Reg-1:0]       logic_out                  ;
@@ -181,6 +193,15 @@ assign reg1_i_not = ~reg1_i;
                 end
                 `EXE_MOVN_OP: begin
                     move_out = reg1_i;
+                end
+                `EXE_MFC0_OP: begin
+                    cp0_reg_read_addr = inst_i[15:11];
+                    move_out = cp0_reg_data_i;
+                    if(mem_cp0_reg_we == `Write_Enable && mem_cp0_reg_write_addr == inst_i[15:11])begin
+                        move_out = mem_cp0_reg_data;
+                    end else if(wb_cp0_reg_we == `Write_Enable && wb_cp0_reg_write_addr == inst_i[15:11])begin
+                        move_out = wb_cp0_reg_data;
+                    end
                 end
                 default begin
                     move_out = `Zero_Word;
@@ -428,6 +449,22 @@ end
                 wdata_o = `Zero_Word;
             end
         endcase
+    end
+
+    always@(*)begin
+        if(rst == `Rst_Enable)begin
+            cp0_reg_we_o = `Write_Disable;
+            cp0_reg_data_o = `Zero_Word;
+            cp0_reg_write_addr_o = 5'b0;
+        end else if(aluop_i == `EXE_MTC0_OP)begin
+            cp0_reg_we_o = `Write_Enable;
+            cp0_reg_data_o = reg1_i;
+            cp0_reg_write_addr_o = inst_i[15:11];
+        end else begin
+            cp0_reg_we_o = `Write_Disable;
+            cp0_reg_data_o = `Zero_Word;
+            cp0_reg_write_addr_o = 5'b0;
+        end
     end
 
 endmodule
