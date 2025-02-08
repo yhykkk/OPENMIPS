@@ -154,7 +154,8 @@ wire                   [`Inst_Data-1:0] id_inst                    ;
     .next_inst_in_delayslot_o          (next_inst_in_delayslot    ),
     .branch_target_addr_o              (branch_target_addr        ),
     .link_addr_o                       (id_link_addr              ),
-    .inst_o                            (inst_id                   ) 
+    .inst_o                            (inst_id                   ),
+    .ex_aluop_i                        (aluop_ex                  ) 
     );
     
     //regfile

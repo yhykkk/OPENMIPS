@@ -26,6 +26,7 @@ module ID(
     input              [`Reg-1:0]       mem_wdata_i                ,
 
     input                               is_in_delayslot_i          ,//wether in delayslot inst
+    input              [`Alu_Op-1:0]    ex_aluop_i                 ,
 
     output reg                          reg1_read_o                ,//read enable for regfile
     output reg                          reg2_read_o                ,
@@ -45,7 +46,7 @@ module ID(
     output reg         [`Inst_Addr-1:0] link_addr_o                ,//save inst addr return
     output reg         [`Inst_Data-1:0] inst_o                     ,
 
-    output reg                          stallreq                    
+    output                              stallreq                    
     );
     
     //get code
@@ -68,6 +69,39 @@ wire                   [`Reg-1:0]       pc_plus_4                  ;
 
 wire                   [`Reg-1:0]       imm_sll2_signedext         ;
 
+reg                                     stallreq_for_reg1_loadrelate;
+reg                                     stallreq_for_reg2_loadrelate;
+
+wire                                    pre_inst_is_load           ;
+
+assign pre_inst_is_load = ((ex_aluop_i == `EXE_LB_OP) ||
+                          (ex_aluop_i == `EXE_LBU_OP) ||
+                          (ex_aluop_i == `EXE_LH_OP) ||
+                          (ex_aluop_i == `EXE_LHU_OP) ||
+                          (ex_aluop_i == `EXE_LW_OP) ||
+                          (ex_aluop_i == `EXE_LWR_OP) ||
+                          (ex_aluop_i == `EXE_LWL_OP) ||
+                          (ex_aluop_i == `EXE_LL_OP) ||
+                          (ex_aluop_i == `EXE_SC_OP)) ? 1'b1 : 1'b0;
+
+always@(*) begin
+    stallreq_for_reg1_loadrelate = `NoStop;
+    if(rst == `Rst_Enable)begin
+    end else if(pre_inst_is_load == 1'b1 && ex_wd_i == reg1_addr_o && reg1_read_o == 1'b1)begin
+        stallreq_for_reg1_loadrelate = `Stop;
+    end
+end
+
+always@(*) begin
+    stallreq_for_reg2_loadrelate = `NoStop;
+    if(rst == `Rst_Enable)begin
+    end else if(pre_inst_is_load == 1'b1 && ex_wd_i == reg2_addr_o && reg2_read_o == 1'b1)begin
+        stallreq_for_reg2_loadrelate = `Stop;
+    end
+end
+
+assign stallreq = (stallreq_for_reg1_loadrelate == `Stop || stallreq_for_reg2_loadrelate == `Stop) ;
+
 assign pc_plus_8 = pc_i + 8; //save the second inst
 assign pc_plus_4 = pc_i + 4; //save the following inst
 
@@ -85,9 +119,6 @@ assign imm_sll2_signedext = { {14{inst_i[15]}}, inst_i[15:0], 2'b00};
         end
     end
 
-    always@(*)begin
-        stallreq = `NoStop;
-    end
     //decoding
     always@(*)begin
         if(rst == `Rst_Enable)begin
