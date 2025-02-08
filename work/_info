@@ -22,7 +22,7 @@ w1738820351
 FE:/Digital Circuit/OPEN MIPS/rtl/ctrl.v
 Z2 L0 11
 Z3 OL;L;10.6c;65
-Z4 !s108 1738987984.000000
+Z4 !s108 1738997317.000000
 !s107 E:\Digital Circuit\OPEN MIPS\rtl\define.v|E:/Digital Circuit/OPEN MIPS/rtl/ctrl.v|
 !s90 -reportprogress|300|-work|work|-vopt|-stats=none|E:/Digital Circuit/OPEN MIPS/rtl/ctrl.v|
 !i113 0
@@ -62,7 +62,7 @@ w1738930142
 FE:/Digital Circuit/OPEN MIPS/rtl/ex.v
 R2
 R3
-R4
+Z8 !s108 1738997316.000000
 !s107 E:\Digital Circuit\OPEN MIPS\rtl\define.v|E:/Digital Circuit/OPEN MIPS/rtl/ex.v|
 !s90 -reportprogress|300|-work|work|-vopt|-stats=none|E:/Digital Circuit/OPEN MIPS/rtl/ex.v|
 !i113 0
@@ -82,7 +82,7 @@ w1738930963
 FE:/Digital Circuit/OPEN MIPS/rtl/ex_mem.v
 R2
 R3
-R4
+R8
 !s107 E:\Digital Circuit\OPEN MIPS\rtl\define.v|E:/Digital Circuit/OPEN MIPS/rtl/ex_mem.v|
 !s90 -reportprogress|300|-work|work|-vopt|-stats=none|E:/Digital Circuit/OPEN MIPS/rtl/ex_mem.v|
 !i113 0
@@ -114,15 +114,15 @@ r1
 !s85 0
 31
 !i10b 1
-!s100 EIAkDZn<5]f;7cLJA1znf0
-IeelhoMoVIabM9iK5kV``z3
+!s100 RnoJ3e@W32D4`@FiX5]Pe1
+IQoIcmV?U[aDj[jaOWKRH_3
 R1
-w1738945253
+w1738995063
 8E:/Digital Circuit/OPEN MIPS/rtl/ID.v
 FE:/Digital Circuit/OPEN MIPS/rtl/ID.v
 R2
 R3
-R4
+R8
 !s107 E:\Digital Circuit\OPEN MIPS\rtl\define.v|E:/Digital Circuit/OPEN MIPS/rtl/ID.v|
 !s90 -reportprogress|300|-work|work|-vopt|-stats=none|E:/Digital Circuit/OPEN MIPS/rtl/ID.v|
 !i113 0
@@ -143,7 +143,7 @@ w1738929415
 FE:/Digital Circuit/OPEN MIPS/rtl/id_ex.v
 L0 9
 R3
-R4
+R8
 !s107 E:\Digital Circuit\OPEN MIPS\rtl\define.v|E:/Digital Circuit/OPEN MIPS/rtl/id_ex.v|
 !s90 -reportprogress|300|-work|work|-vopt|-stats=none|E:/Digital Circuit/OPEN MIPS/rtl/id_ex.v|
 !i113 0
@@ -163,9 +163,29 @@ w1738821089
 FE:/Digital Circuit/OPEN MIPS/rtl/if_id.v
 R2
 R3
-R4
+R8
 !s107 E:\Digital Circuit\OPEN MIPS\rtl\define.v|E:/Digital Circuit/OPEN MIPS/rtl/if_id.v|
 !s90 -reportprogress|300|-work|work|-vopt|-stats=none|E:/Digital Circuit/OPEN MIPS/rtl/if_id.v|
+!i113 0
+R5
+R6
+vllbit
+R0
+r1
+!s85 0
+31
+!i10b 1
+!s100 jF6;ZSgYfC2THmIA^d<n43
+ICd5`1;ULRDEYG0n1Wl=nc0
+R1
+w1738993323
+8E:/Digital Circuit/OPEN MIPS/rtl/llbit.v
+FE:/Digital Circuit/OPEN MIPS/rtl/llbit.v
+R2
+R3
+R4
+!s107 E:\Digital Circuit\OPEN MIPS\rtl\define.v|E:/Digital Circuit/OPEN MIPS/rtl/llbit.v|
+!s90 -reportprogress|300|-work|work|-vopt|-stats=none|E:/Digital Circuit/OPEN MIPS/rtl/llbit.v|
 !i113 0
 R5
 R6
@@ -175,15 +195,15 @@ r1
 !s85 0
 31
 !i10b 1
-!s100 CQOoSj3dSUkeRBAlWHn753
-IHNlR^OWPOQMIjFjkdOae60
+!s100 Bf_]f^dzBoFfCk4[^=nm?2
+IKlBGgRZUbfe3_BM6nDL@I2
 R1
-w1738936585
+w1738995968
 8E:/Digital Circuit/OPEN MIPS/rtl/mem.v
 FE:/Digital Circuit/OPEN MIPS/rtl/mem.v
 R2
 R3
-R4
+R8
 !s107 E:\Digital Circuit\OPEN MIPS\rtl\define.v|E:/Digital Circuit/OPEN MIPS/rtl/mem.v|
 !s90 -reportprogress|300|-work|work|-vopt|-stats=none|E:/Digital Circuit/OPEN MIPS/rtl/mem.v|
 !i113 0
@@ -195,15 +215,15 @@ r1
 !s85 0
 31
 !i10b 1
-!s100 T=B;fTnoonYgZCUD=f5CE2
-IU0ghV7SC0eUeEZcKE=9g@3
+!s100 `5_:CQc5Z8_zAj55e01hi1
+Ie?SjBWE^I3<8ez5PklZJT3
 R1
-w1738821600
+w1738996480
 8E:/Digital Circuit/OPEN MIPS/rtl/mem_wb.v
 FE:/Digital Circuit/OPEN MIPS/rtl/mem_wb.v
 R2
 R3
-R4
+R8
 !s107 E:\Digital Circuit\OPEN MIPS\rtl\define.v|E:/Digital Circuit/OPEN MIPS/rtl/mem_wb.v|
 !s90 -reportprogress|300|-work|work|-vopt|-stats=none|E:/Digital Circuit/OPEN MIPS/rtl/mem_wb.v|
 !i113 0
@@ -215,15 +235,15 @@ r1
 !s85 0
 31
 !i10b 1
-!s100 K:b2oQD2GJN9fAK2b:48E2
-ILKOQM6l<BS6KB9ciceC3U3
+!s100 I?mC6V]_aY<>@X74aeSeV2
+I2oZW8Gh:03EYGXoP[cVMf3
 R1
-w1738938426
+w1738997083
 8E:/Digital Circuit/OPEN MIPS/rtl/OpenMIPS.v
 FE:/Digital Circuit/OPEN MIPS/rtl/OpenMIPS.v
 R2
 R3
-R4
+R8
 !s107 E:\Digital Circuit\OPEN MIPS\rtl\define.v|E:/Digital Circuit/OPEN MIPS/rtl/OpenMIPS.v|
 !s90 -reportprogress|300|-work|work|-vopt|-stats=none|E:/Digital Circuit/OPEN MIPS/rtl/OpenMIPS.v|
 !i113 0
@@ -264,7 +284,7 @@ w1738940363
 FE:/Digital Circuit/OPEN MIPS/rtl/openmips_min_sopc.v
 R7
 R3
-R4
+R8
 !s107 E:\Digital Circuit\OPEN MIPS\rtl\define.v|E:/Digital Circuit/OPEN MIPS/rtl/openmips_min_sopc.v|
 !s90 -reportprogress|300|-work|work|-vopt|-stats=none|E:/Digital Circuit/OPEN MIPS/rtl/openmips_min_sopc.v|
 !i113 0
@@ -284,7 +304,7 @@ w1738896633
 FE:/Digital Circuit/OPEN MIPS/rtl/pc_reg.v
 R7
 R3
-R4
+R8
 !s107 E:\Digital Circuit\OPEN MIPS\rtl\define.v|E:/Digital Circuit/OPEN MIPS/rtl/pc_reg.v|
 !s90 -reportprogress|300|-work|work|-vopt|-stats=none|E:/Digital Circuit/OPEN MIPS/rtl/pc_reg.v|
 !i113 0
@@ -304,7 +324,7 @@ w1738944784
 FE:/Digital Circuit/OPEN MIPS/rtl/ram.v
 R7
 R3
-!s108 1738987985.000000
+R4
 !s107 E:\Digital Circuit\OPEN MIPS\rtl\define.v|E:/Digital Circuit/OPEN MIPS/rtl/ram.v|
 !s90 -reportprogress|300|-work|work|-vopt|-stats=none|E:/Digital Circuit/OPEN MIPS/rtl/ram.v|
 !i113 0
@@ -324,7 +344,7 @@ w1738505886
 FE:/Digital Circuit/OPEN MIPS/rtl/regfile.v
 R7
 R3
-R4
+R8
 !s107 E:\Digital Circuit\OPEN MIPS\rtl\define.v|E:/Digital Circuit/OPEN MIPS/rtl/regfile.v|
 !s90 -reportprogress|300|-work|work|-vopt|-stats=none|E:/Digital Circuit/OPEN MIPS/rtl/regfile.v|
 !i113 0
@@ -336,10 +356,10 @@ r1
 !s85 0
 31
 !i10b 1
-!s100 EaGJTg@fo[IA<jUL6I<Zm0
-I@3@EYk:ISYm50fQQVPmM41
+!s100 nhVC:GQYi[3BQBb`M10@l2
+I]GQ6J>Y]lDDG3LmEIC]Z[1
 R1
-w1738940474
+w1738997265
 8E:/Digital Circuit/OPEN MIPS/rtl/rom.v
 FE:/Digital Circuit/OPEN MIPS/rtl/rom.v
 R7

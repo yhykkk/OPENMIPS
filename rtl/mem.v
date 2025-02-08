@@ -20,6 +20,9 @@ module mem(
     input              [`Reg-1:0]       mem_addr_i                 ,
     input              [`Reg-1:0]       reg2_i                     ,
     input              [`Reg-1:0]       mem_data_i                 ,//data from ram
+    input                               llbit_i                    ,
+    input                               wb_llbit_we_i              ,
+    input                               wb_llbit_value_i           ,
     output reg         [`Reg_Addr-1:0]  wd_o                       ,
     output reg                          wreg_o                     ,
     output reg         [`Reg-1:0]       wdata_o                    ,
@@ -30,12 +33,25 @@ module mem(
     output reg                          mem_we_o                   ,//read,write enable for ram
     output reg         [   3:0]         mem_sel_o                  ,//choose the valid dat
     output reg         [`Reg-1:0]       mem_data_o                 ,//data write
-    output reg                          mem_ce_o                    
+    output reg                          mem_ce_o                   ,
+    output reg                          llbit_we_o                 ,
+    output reg                          llbit_value_o            
     );
     
 wire                   [`Reg-1:0]       zero32                     ;
+reg                                     llbit                      ;
 
 assign zero32 = `Zero_Word;
+
+    always@(*)begin
+        if(rst==`Rst_Enable)begin
+            llbit = 1'b0;
+        end else if(wb_llbit_we_i==`Write_Enable)begin              //data forward in wb
+            llbit = wb_llbit_value_i;
+        end else begin
+            llbit = llbit_i;
+        end
+    end
 
     always@(*)begin
         if(rst==`Rst_Enable)begin
@@ -50,6 +66,8 @@ assign zero32 = `Zero_Word;
             mem_sel_o = 4'b0000;
             mem_data_o = `Zero_Word;
             mem_ce_o = `Chip_Disable;
+            llbit_we_o = `Write_Disable;
+            llbit_value_o = 1'b0;
         end else begin
             wd_o = wd_i;
             wreg_o = wreg_i;
@@ -62,6 +80,8 @@ assign zero32 = `Zero_Word;
             mem_sel_o = 4'b0000;
             mem_data_o = `Zero_Word;
             mem_ce_o = `Chip_Disable;
+            llbit_we_o = `Write_Disable;
+            llbit_value_o = 1'b0;
             case(aluop_i)
                 `EXE_LB_OP: begin
                     mem_addr_o = mem_addr_i;
@@ -308,6 +328,29 @@ assign zero32 = `Zero_Word;
                             mem_sel_o = 4'b0000;
                         end
                     endcase
+                end
+                `EXE_LL_OP: begin
+                    mem_addr_o = mem_addr_i;
+                    mem_we_o = `Write_Disable;
+                    mem_ce_o = `Chip_Enable;
+                    wdata_o = mem_data_i;
+                    mem_sel_o = 4'b1111;
+                    llbit_we_o = `Write_Enable;
+                    llbit_value_o = 1'b1;
+                end
+                `EXE_SC_OP: begin
+                    if(llbit_i == 1'b1)begin
+                        mem_addr_o = mem_addr_i;
+                        llbit_we_o = `Write_Enable;
+                        llbit_value_o = 1'b0;
+                        mem_we_o = `Write_Enable;
+                        mem_ce_o = `Chip_Enable;
+                        mem_sel_o = 4'b1111;
+                        wdata_o = 32'b1;                            //set rt as 1
+                        mem_data_o = reg2_i;
+                    end else begin
+                        wdata_o = 32'b0;
+                    end
                 end
                 default :begin
                 end

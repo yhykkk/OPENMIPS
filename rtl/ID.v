@@ -631,6 +631,24 @@ assign imm_sll2_signedext = { {14{inst_i[15]}}, inst_i[15:0], 2'b00};
                     reg2_read_o = `Read_Enable;
                     instvalid = `Inst_Valid;
                 end
+                `EXE_LL: begin
+                    aluop_o  = `EXE_LL_OP;              //ll,rt,offset(base)
+                    alusel_o = `EXE_RES_LOAD_STORE;
+                    wreg_o   = `Write_Enable;         
+                    reg1_read_o = `Read_Enable;
+                    reg2_read_o = `Read_Disable;
+                    instvalid = `Inst_Valid;
+                    wd_o = inst_i[20:16];
+                end
+                `EXE_SC: begin
+                    aluop_o  = `EXE_SC_OP;              //sc,rt,offset(base)
+                    alusel_o = `EXE_RES_LOAD_STORE;
+                    wreg_o   = `Write_Enable;         
+                    reg1_read_o = `Read_Enable;
+                    reg2_read_o = `Read_Enable;         //rt(the value to be stored)
+                    instvalid = `Inst_Valid;
+                    wd_o = inst_i[20:16];
+                end
                 `EXE_REGIMM_INST: begin
                     case(op4)
                        `EXE_BGEZ : begin                          //bgez rs, offset 

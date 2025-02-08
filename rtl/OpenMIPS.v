@@ -89,6 +89,12 @@ wire                   [`Reg-1:0]       ex_reg2_o                  ;
 wire                   [`Alu_Op-1:0]    mem_aluop                  ;
 wire                   [`Reg-1:0]       mem_mem_addr               ;
 wire                   [`Reg-1:0]       mem_reg2                   ;
+//ll sc
+wire                                    wb_llbit_value             ;
+wire                                    wb_llbit_we                ;
+wire                                    llbit_o                    ;
+wire                                    mem_llbit_we               ;
+wire                                    mem_llbit_value            ;
 
     
     //pc
@@ -302,7 +308,12 @@ wire                   [`Reg-1:0]       mem_wdata_i                ;
     .mem_ce_o                          (ram_ce_o                  ),
     .aluop_i                           (mem_aluop                 ),
     .reg2_i                            (mem_reg2                  ),
-    .mem_addr_i                        (mem_mem_addr              ) 
+    .mem_addr_i                        (mem_mem_addr              ),
+    .llbit_i                           (llbit_o                   ),
+    .wb_llbit_we_i                     (wb_llbit_we               ),
+    .wb_llbit_value_i                  (wb_llbit_value            ),
+    .llbit_we_o                        (mem_llbit_we              ),
+    .llbit_value_o                     (mem_llbit_value           ) 
     );
     
     //mem_wb
@@ -321,7 +332,11 @@ wire                   [`Reg-1:0]       mem_wdata_i                ;
     .wb_hi                             (wb_hi                     ),
     .wb_lo                             (wb_lo                     ),
     .wb_whilo                          (wb_whilo                  ),
-    .stall                             (stall                     ) 
+    .stall                             (stall                     ),
+    .mem_llbit_we                      (mem_llbit_we              ),
+    .mem_llbit_value                   (mem_llbit_value           ),
+    .wb_llbit_we                       (wb_llbit_we               ),
+    .wb_llbit_value                    (wb_llbit_value            ) 
     );
 
     hilo_reg hilo_reg_inst0(
@@ -351,6 +366,14 @@ wire                   [`Reg-1:0]       mem_wdata_i                ;
     .annul_i                           (1'b0                      ),
     .result_o                          (div_result                ),
     .ready_o                           (div_ready                 ) 
+    );
+    
+    llbit llbit_inst0(
+    .clk                               (clk                       ),
+    .rst                               (rst                       ),
+    .llbit_i                           (wb_llbit_value            ),
+    .we                                (wb_llbit_we               ),
+    .llbit_o                           (llbit_o                   ) 
     );
     
     

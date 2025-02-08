@@ -123,7 +123,7 @@
 `define EXE_BGEZAL_OP   8'b01010001          
 `define EXE_BLTZ_OP     8'b11000000          
 `define EXE_BLTZAL_OP   8'b01010000  
-
+//LOAD & STORE
 `define EXE_LB_OP       8'b10100000           
 `define EXE_LBU_OP      8'b01100100           
 `define EXE_LH_OP       8'b10100001          
@@ -135,7 +135,10 @@
 `define EXE_SH_OP       8'b00101001           
 `define EXE_SW_OP       8'b01101011          
 `define EXE_SWL_OP      8'b00101010           
-`define EXE_SWR_OP      8'b00101110           
+`define EXE_SWR_OP      8'b00101110
+//LL & SC
+`define EXE_LL_OP       8'b00110000
+`define EXE_SC_OP       8'b00111000           
 
 `define EXE_RES_NOP             3'b000
 `define EXE_RES_LOGIC           3'b001
@@ -211,8 +214,10 @@
 `define EXE_SH          6'b101001            
 `define EXE_SW          6'b101011             
 `define EXE_SWL         6'b101010            
-`define EXE_SWR         6'b101110        
-
+`define EXE_SWR         6'b101110 
+// ll
+`define EXE_LL          6'b110000             
+`define EXE_SC          6'b111000            
 /***************** instruction rom defination ********************/
 `define Inst_Addr     32
 `define Inst_Addr_Use 17                                            // instruct rom 's address width in use  [less than Inst_Addr]
