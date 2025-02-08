@@ -34,6 +34,7 @@ module ex(
     //branch
     input              [`Reg-1:0]       link_addr_i                ,
     input                               is_in_delayslot_i          ,
+    input              [`Inst_Addr-1:0] inst_i                     ,
     output reg         [`Reg_Addr-1:0]  wd_o                       ,
     output reg                          wreg_o                     ,
     output reg         [`Reg-1:0]       wdata_o                    ,
@@ -48,7 +49,10 @@ module ex(
     output reg         [`Reg-1:0]       div_opdata1_o              ,
     output reg         [`Reg-1:0]       div_opdata2_o              ,
     output reg                          div_start_o                ,
-    output reg                          signed_div_o           
+    output reg                          signed_div_o               ,
+    output reg         [`Alu_Op-1:0]    aluop_o                    ,
+    output reg         [`Reg-1:0]       mem_addr_o                 ,//addr for saving
+    output reg         [`Reg-1:0]       reg2_o                      //store data
     );
     
 reg                    [`Reg-1:0]       logic_out                  ;
@@ -97,6 +101,12 @@ assign reg1_lt_reg2 = ((aluop_i == `EXE_SLT_OP))?
                     (reg1_i < reg2_i);
 //reverse
 assign reg1_i_not = ~reg1_i;
+
+    always@(*)begin
+        mem_addr_o = reg1_i + {{16{inst_i[15]}},inst_i[15:0]};      //inst_i is aimed to cal the aimed addr
+        aluop_o =aluop_i;
+        reg2_o = reg2_i;
+    end
 
     always@(*)begin
         if(rst == `Rst_Enable) begin

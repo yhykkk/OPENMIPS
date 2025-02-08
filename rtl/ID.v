@@ -43,6 +43,7 @@ module ID(
     output reg                          next_inst_in_delayslot_o   ,//detect branch inst then next is delayslot inst
     output reg         [`Inst_Addr-1:0] branch_target_addr_o       ,//output for branch addr
     output reg         [`Inst_Addr-1:0] link_addr_o                ,//save inst addr return
+    output reg         [`Inst_Data-1:0] inst_o                     ,
 
     output reg                          stallreq                    
     );
@@ -71,6 +72,10 @@ assign pc_plus_8 = pc_i + 8; //save the second inst
 assign pc_plus_4 = pc_i + 4; //save the following inst
 
 assign imm_sll2_signedext = { {14{inst_i[15]}}, inst_i[15:0], 2'b00};
+
+    always@(*)begin
+        inst_o = inst_i;
+    end
 
     always@(*)begin
         if(rst == `Rst_Enable)begin
@@ -522,6 +527,109 @@ assign imm_sll2_signedext = { {14{inst_i[15]}}, inst_i[15:0], 2'b00};
                         branch_flag_o = `Branch;
                         next_inst_in_delayslot_o = `InDelaySlot;    
                     end
+                end
+                `EXE_LB: begin                          //lb,rs,offset(base)
+                    aluop_o  = `EXE_LB_OP;              //load byte
+                    alusel_o = `EXE_RES_LOAD_STORE;
+                    wreg_o   = `Write_Enable;         
+                    reg1_read_o = `Read_Enable;
+                    reg2_read_o = `Read_Disable;
+                    instvalid = `Inst_Valid;
+                    wd_o = inst_i[20:16];
+                end
+                `EXE_LBU: begin                         //lbu,rt,offset(base)
+                    aluop_o  = `EXE_LBU_OP;             //load byte
+                    alusel_o = `EXE_RES_LOAD_STORE;
+                    wreg_o   = `Write_Enable;         
+                    reg1_read_o = `Read_Enable;
+                    reg2_read_o = `Read_Disable;
+                    instvalid = `Inst_Valid;
+                    wd_o = inst_i[20:16];
+                end
+                `EXE_LH: begin                         //lh,rt,offset(base)
+                    aluop_o  = `EXE_LH_OP;             //load half word(ADDR_LO==0)
+                    alusel_o = `EXE_RES_LOAD_STORE;
+                    wreg_o   = `Write_Enable;         
+                    reg1_read_o = `Read_Enable;
+                    reg2_read_o = `Read_Disable;
+                    instvalid = `Inst_Valid;
+                    wd_o = inst_i[20:16];
+                end
+                `EXE_LHU: begin                        //lhu,rt,offset(base)
+                    aluop_o  = `EXE_LHU_OP;             //load half word(ADDR_LO==0)
+                    alusel_o = `EXE_RES_LOAD_STORE;
+                    wreg_o   = `Write_Enable;         
+                    reg1_read_o = `Read_Enable;
+                    reg2_read_o = `Read_Disable;
+                    instvalid = `Inst_Valid;
+                    wd_o = inst_i[20:16];
+                end
+                `EXE_LW: begin                         //lw,rt,offset(base)
+                    aluop_o  = `EXE_LW_OP;             //load word(ADDR_LO==00)
+                    alusel_o = `EXE_RES_LOAD_STORE;
+                    wreg_o   = `Write_Enable;         
+                    reg1_read_o = `Read_Enable;
+                    reg2_read_o = `Read_Disable;
+                    instvalid = `Inst_Valid;
+                    wd_o = inst_i[20:16];
+                end
+                `EXE_LWL: begin                        //lwl,rt,offset(base)
+                    aluop_o  = `EXE_LWL_OP;            //load (ADDR_LO==00)
+                    alusel_o = `EXE_RES_LOAD_STORE;
+                    wreg_o   = `Write_Enable;         
+                    reg1_read_o = `Read_Enable;
+                    reg2_read_o = `Read_Enable;
+                    instvalid = `Inst_Valid;
+                    wd_o = inst_i[20:16];
+                end
+                `EXE_LWR: begin                        //lwr,rt,offset(base)
+                    aluop_o  = `EXE_LWR_OP;            //load (ADDR_LO==00)
+                    alusel_o = `EXE_RES_LOAD_STORE;
+                    wreg_o   = `Write_Enable;         
+                    reg1_read_o = `Read_Enable;
+                    reg2_read_o = `Read_Enable;
+                    instvalid = `Inst_Valid;
+                    wd_o = inst_i[20:16];
+                end
+                `EXE_SB: begin                         //sb,rt,offset(base)
+                    aluop_o  = `EXE_SB_OP;             //store rt byte
+                    alusel_o = `EXE_RES_LOAD_STORE;
+                    wreg_o   = `Write_Disable;         
+                    reg1_read_o = `Read_Enable;
+                    reg2_read_o = `Read_Enable;
+                    instvalid = `Inst_Valid;
+                end
+                `EXE_SH: begin                         //sb,rt,offset(base)
+                    aluop_o  = `EXE_SH_OP;             //store rt half word(addr=0)
+                    alusel_o = `EXE_RES_LOAD_STORE;
+                    wreg_o   = `Write_Disable;         
+                    reg1_read_o = `Read_Enable;
+                    reg2_read_o = `Read_Enable;
+                    instvalid = `Inst_Valid;
+                end
+                `EXE_SW: begin                         //sw,rt,offset(base)
+                    aluop_o  = `EXE_SW_OP;             //store rt word(addr=00)
+                    alusel_o = `EXE_RES_LOAD_STORE;
+                    wreg_o   = `Write_Disable;         
+                    reg1_read_o = `Read_Enable;
+                    reg2_read_o = `Read_Enable;
+                    instvalid = `Inst_Valid;
+                end
+                `EXE_SWL: begin                         //swl,rt,offset(base)
+                    aluop_o  = `EXE_SWL_OP;             //store rt word(addr=00)
+                    alusel_o = `EXE_RES_LOAD_STORE;
+                    wreg_o   = `Write_Disable;         
+                    reg1_read_o = `Read_Enable;
+                    reg2_read_o = `Read_Enable;
+                    instvalid = `Inst_Valid;
+                end
+                `EXE_SWR: begin                         //swr,rt,offset(base)
+                    aluop_o  = `EXE_SWR_OP;             //store rt word(addr=00)
+                    alusel_o = `EXE_RES_LOAD_STORE;
+                    wreg_o   = `Write_Disable;         
+                    reg1_read_o = `Read_Enable;
+                    reg2_read_o = `Read_Enable;
+                    instvalid = `Inst_Valid;
                 end
                 `EXE_REGIMM_INST: begin
                     case(op4)

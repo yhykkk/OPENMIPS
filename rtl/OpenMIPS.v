@@ -12,8 +12,14 @@ module OpenMIPS(
     input                               rst                        ,
     input                               clk                        ,
     input              [`Reg-1:0]       rom_data_i                 ,//instruction input
+    input              [`Reg-1:0]       ram_data_i                 ,
     output             [`Reg-1:0]       rom_addr_o                 ,//aimed instruction reg        
-    output                              rom_ce_o                    
+    output                              rom_ce_o                   ,
+    output             [`Reg-1:0]       ram_addr_o                 ,
+    output             [`Reg-1:0]       ram_data_o                 ,
+    output                              ram_we_o                   ,
+    output             [   3:0]         ram_sel_o                  ,
+    output                              ram_ce_o                    
     );
 
 //write data pushing ahead
@@ -74,6 +80,16 @@ wire                   [`Inst_Addr-1:0] branch_target_addr         ;
 wire                   [`Inst_Addr-1:0] id_link_addr               ;
 wire                   [`Inst_Addr-1:0] ex_link_addr               ;
 wire                                    ex_is_in_delayslot         ;
+
+wire                   [`Inst_Data-1:0] inst_id                    ;
+wire                   [`Inst_Addr-1:0] inst_ex                    ;
+wire                   [`Alu_Op-1:0]    aluop_ex                   ;
+wire                   [`Reg-1:0]       mem_addr                   ;
+wire                   [`Reg-1:0]       ex_reg2_o                  ;
+wire                   [`Alu_Op-1:0]    mem_aluop                  ;
+wire                   [`Reg-1:0]       mem_mem_addr               ;
+wire                   [`Reg-1:0]       mem_reg2                   ;
+
     
     //pc
 wire                   [`Inst_Addr-1:0] pc                         ;
@@ -131,7 +147,8 @@ wire                   [`Inst_Data-1:0] id_inst                    ;
     .is_in_delayslot_o                 (id_is_in_delayslot        ),
     .next_inst_in_delayslot_o          (next_inst_in_delayslot    ),
     .branch_target_addr_o              (branch_target_addr        ),
-    .link_addr_o                       (id_link_addr              ) 
+    .link_addr_o                       (id_link_addr              ),
+    .inst_o                            (inst_id                   ) 
     );
     
     //regfile
@@ -183,7 +200,9 @@ wire                                    ex_wreg_i                  ;
     .next_inst_in_delayslot_i          (next_inst_in_delayslot    ),
     .is_in_delayslot_o                 (is_in_delayslot           ),
     .ex_link_addr                      (ex_link_addr              ),
-    .ex_is_in_delayslot                (ex_is_in_delayslot        ) 
+    .ex_is_in_delayslot                (ex_is_in_delayslot        ),
+    .id_inst                           (inst_id                   ),
+    .ex_inst                           (inst_ex                   ) 
     );
     
     //ex
@@ -221,7 +240,11 @@ wire                                    ex_wreg_i                  ;
     .div_start_o                       (div_start                 ),
     .signed_div_o                      (signed_div                ),
     .link_addr_i                       (ex_link_addr              ),
-    .is_in_delayslot_i                 (ex_is_in_delayslot        ) 
+    .is_in_delayslot_i                 (ex_is_in_delayslot        ),
+    .inst_i                            (inst_ex                   ),
+    .aluop_o                           (aluop_ex                  ),
+    .mem_addr_o                        (mem_addr                  ),
+    .reg2_o                            (ex_reg2_o                 ) 
     );
     
     //ex_mem
@@ -247,7 +270,13 @@ wire                   [`Reg-1:0]       mem_wdata_i                ;
     .cnt_i                             (cnt_ex                    ),
     .hilo_i                            (hilo_ex                   ),
     .cnt_o                             (cnt_mem                   ),
-    .hilo_o                            (hilo_mem                  )
+    .hilo_o                            (hilo_mem                  ),
+    .ex_aluop                          (aluop_ex                  ),
+    .ex_mem_addr                       (mem_addr                  ),
+    .ex_reg2                           (ex_reg2_o                 ),
+    .mem_aluop                         (mem_aluop                 ),
+    .mem_mem_addr                      (mem_mem_addr              ),
+    .mem_reg2                          (mem_reg2                  ) 
     );
     
     //mem
@@ -264,7 +293,16 @@ wire                   [`Reg-1:0]       mem_wdata_i                ;
     .whilo_i                           (mem_whilo_i               ),
     .hi_o                              (mem_hi                    ),
     .lo_o                              (mem_lo                    ),
-    .whilo_o                           (mem_whilo                 ) 
+    .whilo_o                           (mem_whilo                 ),
+    .mem_data_i                        (ram_data_i                ),
+    .mem_addr_o                        (ram_addr_o                ),
+    .mem_we_o                          (ram_we_o                  ),
+    .mem_sel_o                         (ram_sel_o                 ),
+    .mem_data_o                        (ram_data_o                ),
+    .mem_ce_o                          (ram_ce_o                  ),
+    .aluop_i                           (mem_aluop                 ),
+    .reg2_i                            (mem_reg2                  ),
+    .mem_addr_i                        (mem_mem_addr              ) 
     );
     
     //mem_wb

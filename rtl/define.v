@@ -122,7 +122,20 @@
 `define EXE_BGEZ_OP     8'b00000001          
 `define EXE_BGEZAL_OP   8'b01010001          
 `define EXE_BLTZ_OP     8'b11000000          
-`define EXE_BLTZAL_OP   8'b01010000           
+`define EXE_BLTZAL_OP   8'b01010000  
+
+`define EXE_LB_OP       8'b10100000           
+`define EXE_LBU_OP      8'b01100100           
+`define EXE_LH_OP       8'b10100001          
+`define EXE_LHU_OP      8'b01100101         
+`define EXE_LW_OP       8'b01100011           
+`define EXE_LWL_OP      8'b01100010         
+`define EXE_LWR_OP      8'b10100110          
+`define EXE_SB_OP       8'b00101000          
+`define EXE_SH_OP       8'b00101001           
+`define EXE_SW_OP       8'b01101011          
+`define EXE_SWL_OP      8'b00101010           
+`define EXE_SWR_OP      8'b00101110           
 
 `define EXE_RES_NOP             3'b000
 `define EXE_RES_LOGIC           3'b001
@@ -185,7 +198,20 @@
 `define EXE_MSUBU       6'b000101    
 //div
 `define EXE_DIV         6'b011010
-`define EXE_DIVU        6'b011011        
+`define EXE_DIVU        6'b011011 
+//load
+`define EXE_LB          6'b100000            
+`define EXE_LBU         6'b100100          
+`define EXE_LH          6'b100001           
+`define EXE_LHU         6'b100101           
+`define EXE_LW          6'b100011            
+`define EXE_LWL         6'b100010           
+`define EXE_LWR         6'b100110            
+`define EXE_SB          6'b101000            
+`define EXE_SH          6'b101001            
+`define EXE_SW          6'b101011             
+`define EXE_SWL         6'b101010            
+`define EXE_SWR         6'b101110        
 
 /***************** instruction rom defination ********************/
 `define Inst_Addr     32
@@ -198,4 +224,5 @@
 `define Reg_Zero      5'b00000                                      //register 0
 `define No_Addr       32'b0
 `define Reg_Double    64
+`define Byte_Width    8
 /***************** regfile defination ********************/
