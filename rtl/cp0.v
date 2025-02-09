@@ -15,6 +15,9 @@ module cp0(
     input              [   4:0]         r_addr_i                   ,
     input              [`Reg-1:0]       data_i                     ,
     input              [   5:0]         int_i                     ,//6 interupt inst
+    input              [  31:0]         excepttype_i               ,
+    input              [`Reg-1:0]       current_inst_addr_i        ,
+    input                               is_in_delayslot_i          ,
     output reg         [`Reg-1:0]       data_o                     ,
     output reg         [`Reg-1:0]       count_o                    ,//value for count reg
     output reg         [`Reg-1:0]       compare_o                  ,//value for compare reg
@@ -51,6 +54,7 @@ module cp0(
                     end
                     `CP0_REG_COMPARE: begin
                         compare_o <= data_i;
+                        timer_int_o <= `InterruptNotAssert;
                     end
                     `CP0_REG_STATUS: begin
                         status_o <= data_i;
@@ -65,6 +69,77 @@ module cp0(
                     end
                 endcase
             end
+
+            case(excepttype_i)
+                32'h00000001: begin
+                    if(is_in_delayslot_i == `InDelaySlot)begin
+                        epc_o <= current_inst_addr_i - 4;
+                        cause_o[31] <= 1'b1;
+                    end else begin
+                        epc_o <= current_inst_addr_i;
+                        cause_o[31] <= 1'b0;
+                    end 
+                    status_o[1] <= 1'b1;
+                    cause_o[6:2] <= 5'b00000;
+                end
+                32'h00000008: begin
+                    if(status_o[1] == 1'b0)begin
+                        if(is_in_delayslot_i == `InDelaySlot)begin
+                            epc_o <= current_inst_addr_i - 4;
+                            cause_o[31] <= 1'b1;
+                        end else begin
+                            epc_o <= current_inst_addr_i;
+                            cause_o[31] <= 1'b0;
+                        end 
+                    end
+                    status_o[1] <= 1'b1;
+                    cause_o[6:2] <= 5'b01000;
+                end
+                32'h0000000a: begin
+                    if(status_o[1] == 1'b0)begin
+                        if(is_in_delayslot_i == `InDelaySlot)begin
+                            epc_o <= current_inst_addr_i - 4;
+                            cause_o[31] <= 1'b1;
+                        end else begin
+                            epc_o <= current_inst_addr_i;
+                            cause_o[31] <= 1'b0;
+                        end 
+                    end
+                    status_o[1] <= 1'b1;
+                    cause_o[6:2] <= 5'b01010;
+                end
+                32'h0000000d: begin
+                    if(status_o[1] == 1'b0)begin
+                        if(is_in_delayslot_i == `InDelaySlot)begin
+                            epc_o <= current_inst_addr_i - 4;
+                            cause_o[31] <= 1'b1;
+                        end else begin
+                            epc_o <= current_inst_addr_i;
+                            cause_o[31] <= 1'b0;
+                        end 
+                    end
+                    status_o[1] <= 1'b1;
+                    cause_o[6:2] <= 5'b01101;
+                end
+                32'h0000000c: begin
+                    if(status_o[1] == 1'b0)begin
+                        if(is_in_delayslot_i == `InDelaySlot)begin
+                            epc_o <= current_inst_addr_i - 4;
+                            cause_o[31] <= 1'b1;
+                        end else begin
+                            epc_o <= current_inst_addr_i;
+                            cause_o[31] <= 1'b0;
+                        end 
+                    end
+                    status_o[1] <= 1'b1;
+                    cause_o[6:2] <= 5'b01100;
+                end
+                32'h0000000e: begin
+                    status_o[1] <= 1'b0; 
+                end
+                default :begin
+                end    
+            endcase
         end    
     end
 

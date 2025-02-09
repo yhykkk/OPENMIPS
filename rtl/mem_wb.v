@@ -23,6 +23,7 @@ module mem_wb(
     input                               mem_cp0_reg_we             ,
     input              [   4:0]         mem_cp0_reg_write_addr     ,
     input              [`Reg-1:0]       mem_cp0_reg_data           ,
+    input                               flush                      ,
     output reg         [`Reg_Addr-1:0]  wb_wd                      ,
     output reg                          wb_wreg                    ,
     output reg         [`Reg-1:0]       wb_wdata                   ,
@@ -38,6 +39,18 @@ module mem_wb(
     
     always@(posedge clk)begin
         if(rst==`Rst_Enable)begin
+            wb_wd <= `Reg_Zero;
+            wb_wreg <= `Write_Disable;
+            wb_wdata <= `Zero_Word;
+            wb_hi <= `Zero_Word;
+            wb_lo <= `Zero_Word;
+            wb_whilo <= `Write_Disable;
+            wb_llbit_we <= `Write_Disable;
+            wb_llbit_value <= 1'b0;
+            wb_cp0_reg_we <= `Write_Disable;
+            wb_cp0_reg_write_addr <= 5'b0;
+            wb_cp0_reg_data <= `Zero_Word;
+        end else if(flush == `Flush)begin
             wb_wd <= `Reg_Zero;
             wb_wreg <= `Write_Disable;
             wb_wdata <= `Zero_Word;

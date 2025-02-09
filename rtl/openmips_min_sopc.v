@@ -21,6 +21,10 @@ wire                                    ram_we                     ;
 wire                   [   3:0]         ram_sel                    ;
 wire                                    ram_ce                     ;
 wire                   [`Reg-1:0]       ram_data_o                 ;
+wire                   [   5:0]         int                        ;
+wire                                    timer_int                  ;
+
+assign int = {5'b0,timer_int};
 
     
     //rom
@@ -41,7 +45,9 @@ wire                   [`Reg-1:0]       ram_data_o                 ;
     .ram_we_o                          (ram_we                    ),
     .ram_sel_o                         (ram_sel                   ),
     .ram_ce_o                          (ram_ce                    ),
-    .ram_data_i                        (ram_data_o                ) 
+    .ram_data_i                        (ram_data_o                ),
+    .int_i                             (int                       ),
+    .timer_int_o                       (timer_int                 ) 
     );
     
     ram ram_inst0(

@@ -13,6 +13,8 @@ module pc_reg(
     input              [   5:0]         stall                      ,//pause signal from ctrl
     input                               branch_flag_i              ,//wether branch
     input              [`Reg-1:0]       branch_target_addr_i       ,//target addr
+    input                               flush                      ,
+    input              [`Inst_Addr-1:0] new_pc                     ,//new pc from ctrl
     output reg         [`Inst_Addr-1:0] pc                         ,//address for reading
     output reg                          ce                          //order register enable
     );
@@ -32,6 +34,8 @@ always@(posedge clk)
             pc <= `Zero_Word;                                            //in case ce==1 but rst==0
         end else if(ce == `Chip_Disable)begin
             pc <= `Zero_Word;
+        end else if(flush == `Flush)begin
+            pc <= new_pc;
         end else if(stall[0] == `NoStop)begin
             if(branch_flag_i == `Branch)begin
                 pc <= branch_target_addr_i;

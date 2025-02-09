@@ -21,8 +21,8 @@
 `define Alu_Op         8
 `define Alu_Sel        3
 
-`define Inst_Valid     1'b1
-`define Inst_Invalid   1'b0
+`define Inst_Valid     1'b0
+`define Inst_Invalid   1'b1
 
 `define Zero_Word      32'b0
 
@@ -48,6 +48,17 @@
 //INTERRUPT
 `define InterruptAssert    1'b1
 `define InterruptNotAssert  1'b0
+
+//TRAP
+`define TrapAssert     1'b1
+`define TrapNotAssert  1'b0
+
+//FLUSH
+`define Flush          1'b1
+`define NotFlush       1'b0
+
+`define False          1'b0
+`define True           1'b1
      
 /***************** instruction defination ********************/
 //BRANCH
@@ -145,7 +156,22 @@
 `define EXE_SC_OP       8'b00111000 
 //CP0
 `define EXE_MFC0_OP     8'b01011101         
-`define EXE_MTC0_OP     8'b11100000          
+`define EXE_MTC0_OP     8'b11100000 
+//FLUSH
+`define EXE_SYSCALL_OP  8'b01001100           
+`define EXE_TEQ_OP      8'b00110100           
+`define EXE_TEQI_OP     8'b10001100           
+`define EXE_TGE_OP      8'b01110000          
+`define EXE_TGEI_OP     8'b10001000          
+`define EXE_TGEIU_OP    8'b10001001          
+`define EXE_TGEU_OP     8'b00110001           
+`define EXE_TLT_OP      8'b00110010          
+`define EXE_TLTI_OP     8'b10001010           
+`define EXE_TLTIU_OP    8'b10001011           
+`define EXE_TLTU_OP     8'b01110011           
+`define EXE_TNE_OP      8'b00110110           
+`define EXE_TNEI_OP     8'b01001110
+`define EXE_ERET_OP     8'b11111111          
 
 `define EXE_RES_NOP             3'b000
 `define EXE_RES_LOGIC           3'b001
@@ -224,7 +250,23 @@
 `define EXE_SWR         6'b101110 
 // ll
 `define EXE_LL          6'b110000             
-`define EXE_SC          6'b111000            
+`define EXE_SC          6'b111000    
+//flush
+`define EXE_SYSCALL     6'b001100            
+`define EXE_TEQ         6'b110100            
+`define EXE_TEQI        5'b01100             
+`define EXE_TGE         6'b110000            
+`define EXE_TGEI        5'b01000              
+`define EXE_TGEIU       5'b01001              
+`define EXE_TGEU        6'b110001            
+`define EXE_TLT         6'b110010             
+`define EXE_TLTI        5'b01010              
+`define EXE_TLTIU       5'b01011              
+`define EXE_TLTU        6'b110011             
+`define EXE_TNE         6'b110110             
+`define EXE_TNEI        5'b01110              
+
+`define EXE_ERET        32'b0100_0010_0000_0000_0000_0000_0001_1000 
 /***************** instruction rom defination ********************/
 `define Inst_Addr     32
 `define Inst_Addr_Use 17                                            // instruct rom 's address width in use  [less than Inst_Addr]

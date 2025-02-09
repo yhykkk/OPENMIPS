@@ -46,7 +46,9 @@ module ID(
     output reg         [`Inst_Addr-1:0] link_addr_o                ,//save inst addr return
     output reg         [`Inst_Data-1:0] inst_o                     ,
 
-    output                              stallreq                    
+    output                              stallreq                   ,
+    output             [  31:0]         excepttype_o               ,
+    output             [`Reg-1:0]       current_inst_addr_o         
     );
     
     //get code
@@ -73,6 +75,13 @@ reg                                     stallreq_for_reg1_loadrelate;
 reg                                     stallreq_for_reg2_loadrelate;
 
 wire                                    pre_inst_is_load           ;
+
+reg                                     excepttype_is_syscall      ;//syscall
+reg                                     excepttype_is_eret         ;//eret
+
+assign excepttype_o = {19'b0,excepttype_is_eret,2'b0,instvalid,excepttype_is_syscall,8'b0};
+
+assign current_inst_addr_o = pc_i;
 
 assign pre_inst_is_load = ((ex_aluop_i == `EXE_LB_OP) ||
                           (ex_aluop_i == `EXE_LBU_OP) ||
@@ -136,6 +145,8 @@ assign imm_sll2_signedext = { {14{inst_i[15]}}, inst_i[15:0], 2'b00};
             branch_target_addr_o = `Zero_Word;
             branch_flag_o = `NotBranch;
             next_inst_in_delayslot_o = `NotInDelaySlot;
+            excepttype_is_syscall = `False;
+            excepttype_is_eret = `False;
         end else begin
             reg1_read_o = `Read_Disable;
             reg2_read_o = `Read_Disable;
@@ -151,7 +162,8 @@ assign imm_sll2_signedext = { {14{inst_i[15]}}, inst_i[15:0], 2'b00};
             branch_target_addr_o = `Zero_Word;
             branch_flag_o = `NotBranch;
             next_inst_in_delayslot_o = `NotInDelaySlot;
-
+            excepttype_is_syscall = `False;
+            excepttype_is_eret = `False;
             case(op)
                 `EXE_SPECIAL_INST: begin
                     case(op2) 
@@ -379,7 +391,64 @@ assign imm_sll2_signedext = { {14{inst_i[15]}}, inst_i[15:0], 2'b00};
                                     branch_target_addr_o = reg1_o;
                                     branch_flag_o = `Branch;
                                     next_inst_in_delayslot_o = `InDelaySlot;
-                                end                               
+                                end  
+                                `EXE_TEQ : begin                   //teq,rs,rt 
+                                    aluop_o = `EXE_TEQ_OP;
+                                    alusel_o = `EXE_RES_NOP;
+                                    wreg_o = `Write_Disable;
+                                    reg1_read_o = `Read_Enable;
+                                    reg2_read_o = `Read_Enable;
+                                    instvalid = `Inst_Valid;  
+                                end 
+                                `EXE_TGE : begin                   //tge,rs,rt 
+                                    aluop_o = `EXE_TGE_OP;
+                                    alusel_o = `EXE_RES_NOP;
+                                    wreg_o = `Write_Disable;
+                                    reg1_read_o = `Read_Enable;
+                                    reg2_read_o = `Read_Enable;
+                                    instvalid = `Inst_Valid;  
+                                end                            
+                                `EXE_TGEU : begin                  //tgeu,rs,rt 
+                                    aluop_o = `EXE_TGEU_OP;
+                                    alusel_o = `EXE_RES_NOP;
+                                    wreg_o = `Write_Disable;
+                                    reg1_read_o = `Read_Enable;
+                                    reg2_read_o = `Read_Enable;
+                                    instvalid = `Inst_Valid;  
+                                end  
+                                `EXE_TLT : begin                   //tlt,rs,rt 
+                                    aluop_o = `EXE_TLT_OP;
+                                    alusel_o = `EXE_RES_NOP;
+                                    wreg_o = `Write_Disable;
+                                    reg1_read_o = `Read_Enable;
+                                    reg2_read_o = `Read_Enable;
+                                    instvalid = `Inst_Valid;  
+                                end  
+                                `EXE_TLTU : begin                  //tltu,rs,rt 
+                                    aluop_o = `EXE_TLTU_OP;
+                                    alusel_o = `EXE_RES_NOP;
+                                    wreg_o = `Write_Disable;
+                                    reg1_read_o = `Read_Enable;
+                                    reg2_read_o = `Read_Enable;
+                                    instvalid = `Inst_Valid;  
+                                end  
+                                `EXE_TNE : begin                   //tne,rs,rt 
+                                    aluop_o = `EXE_TNE_OP;
+                                    alusel_o = `EXE_RES_NOP;
+                                    wreg_o = `Write_Disable;
+                                    reg1_read_o = `Read_Enable;
+                                    reg2_read_o = `Read_Enable;
+                                    instvalid = `Inst_Valid;  
+                                end 
+                                `EXE_SYSCALL : begin               //syscall
+                                    aluop_o = `EXE_SYSCALL_OP;
+                                    alusel_o = `EXE_RES_NOP;
+                                    wreg_o = `Write_Disable;
+                                    reg1_read_o = `Read_Disable;
+                                    reg2_read_o = `Read_Disable;
+                                    instvalid = `Inst_Valid;  
+                                    excepttype_is_syscall = `True;
+                                end 
                                 default : begin
                                 end
                             endcase
@@ -740,6 +809,60 @@ assign imm_sll2_signedext = { {14{inst_i[15]}}, inst_i[15:0], 2'b00};
                                 next_inst_in_delayslot_o = `InDelaySlot;    
                             end
                         end
+                        `EXE_TEQI : begin                          //teqi rs, imm 
+                            aluop_o = `EXE_TEQI_OP;                
+                            wreg_o = `Write_Disable;
+                            alusel_o = `EXE_RES_NOP;
+                            reg1_read_o = `Read_Enable;
+                            reg2_read_o = `Read_Disable;
+                            instvalid = `Inst_Valid;
+                            imm = {{16{inst_i[15]}},inst_i[15:0]};
+                        end
+                        `EXE_TGEI : begin                          //tgei rs, imm 
+                            aluop_o = `EXE_TGEI_OP;                
+                            wreg_o = `Write_Disable;
+                            alusel_o = `EXE_RES_NOP;
+                            reg1_read_o = `Read_Enable;
+                            reg2_read_o = `Read_Disable;
+                            instvalid = `Inst_Valid;
+                            imm = {{16{inst_i[15]}},inst_i[15:0]};
+                        end
+                        `EXE_TGEIU : begin                         //tgeiu rs, imm 
+                            aluop_o = `EXE_TGEIU_OP;                
+                            wreg_o = `Write_Disable;
+                            alusel_o = `EXE_RES_NOP;
+                            reg1_read_o = `Read_Enable;
+                            reg2_read_o = `Read_Disable;
+                            instvalid = `Inst_Valid;
+                            imm = {{16{inst_i[15]}},inst_i[15:0]};
+                        end
+                        `EXE_TLTI : begin                         //tlti rs, imm 
+                            aluop_o = `EXE_TLTI_OP;                
+                            wreg_o = `Write_Disable;
+                            alusel_o = `EXE_RES_NOP;
+                            reg1_read_o = `Read_Enable;
+                            reg2_read_o = `Read_Disable;
+                            instvalid = `Inst_Valid;
+                            imm = {{16{inst_i[15]}},inst_i[15:0]};
+                        end
+                        `EXE_TLTIU : begin                        //tltiu rs, imm 
+                            aluop_o = `EXE_TLTIU_OP;                
+                            wreg_o = `Write_Disable;
+                            alusel_o = `EXE_RES_NOP;
+                            reg1_read_o = `Read_Enable;
+                            reg2_read_o = `Read_Disable;
+                            instvalid = `Inst_Valid;
+                            imm = {{16{inst_i[15]}},inst_i[15:0]};
+                        end
+                        `EXE_TNEI : begin                         //tnei rs, imm 
+                            aluop_o = `EXE_TNEI_OP;                
+                            wreg_o = `Write_Disable;
+                            alusel_o = `EXE_RES_NOP;
+                            reg1_read_o = `Read_Enable;
+                            reg2_read_o = `Read_Disable;
+                            instvalid = `Inst_Valid;
+                            imm = {{16{inst_i[15]}},inst_i[15:0]};
+                        end
                         default :begin
                         end
                     endcase
@@ -855,6 +978,15 @@ assign imm_sll2_signedext = { {14{inst_i[15]}}, inst_i[15:0], 2'b00};
                 reg2_read_o = `Read_Disable;
                 reg1_addr_o = inst_i[20:16];  
                 instvalid = `Inst_Valid;
+            end
+            if(inst_i == `EXE_ERET)begin
+                aluop_o = `EXE_ERET_OP;                
+                wreg_o = `Write_Disable;
+                alusel_o = `EXE_RES_NOP;
+                reg1_read_o = `Read_Disable;
+                reg2_read_o = `Read_Disable;
+                instvalid = `Inst_Valid;
+                excepttype_is_eret = `True;
             end    
         end
     end

@@ -26,6 +26,15 @@ module mem(
     input                               cp0_reg_we_i               ,
     input              [   4:0]         cp0_reg_write_addr_i       ,
     input              [`Reg-1:0]       cp0_reg_data_i             ,
+    input              [  31:0]         excepttype_i               ,
+    input              [`Reg-1:0]       current_inst_addr_i        ,
+    input                               is_in_delayslot_i          ,
+    input              [`Reg-1:0]       cp0_status_i               ,
+    input              [`Reg-1:0]       cp0_cause_i                ,
+    input              [`Reg-1:0]       cp0_epc_i                  ,
+    input                               wb_cp0_reg_we              ,
+    input              [   4:0]         wb_cp0_reg_write_addr      ,
+    input              [`Reg-1:0]       wb_cp0_reg_write_data      ,
     output reg         [`Reg_Addr-1:0]  wd_o                       ,
     output reg                          wreg_o                     ,
     output reg         [`Reg-1:0]       wdata_o                    ,
@@ -33,7 +42,7 @@ module mem(
     output reg         [`Reg-1:0]       lo_o                       ,
     output reg                          whilo_o                    ,
     output reg         [`Reg-1:0]       mem_addr_o                 ,//data store addr
-    output reg                          mem_we_o                   ,//read,write enable for ram
+    output                              mem_we_o                   ,//read,write enable for ram
     output reg         [   3:0]         mem_sel_o                  ,//choose the valid dat
     output reg         [`Reg-1:0]       mem_data_o                 ,//data write
     output reg                          mem_ce_o                   ,
@@ -41,12 +50,23 @@ module mem(
     output reg                          llbit_value_o              ,
     output reg                          cp0_reg_we_o               ,
     output reg         [   4:0]         cp0_reg_write_addr_o       ,
-    output reg         [`Reg-1:0]       cp0_reg_data_o              
+    output reg         [`Reg-1:0]       cp0_reg_data_o             ,
+    output reg         [  31:0]         excepttype_o               ,
+    output             [`Reg-1:0]       current_inst_addr_o        ,
+    output                              is_in_delayslot_o          ,
+    output             [`Reg-1:0]       cp0_epc_o                   
     );
     
 wire                   [`Reg-1:0]       zero32                     ;
 reg                                     llbit                      ;
+reg                    [`Reg-1:0]       cp0_status                 ;
+reg                    [`Reg-1:0]       cp0_cause                  ;
+reg                    [`Reg-1:0]       cp0_epc                    ;
+reg                                     mem_we                     ;
 
+assign is_in_delayslot_o = is_in_delayslot_i;
+assign current_inst_addr_o = current_inst_addr_i;
+assign cp0_epc_o = cp0_epc;
 assign zero32 = `Zero_Word;
 
     always@(*)begin
@@ -61,6 +81,63 @@ assign zero32 = `Zero_Word;
 
     always@(*)begin
         if(rst==`Rst_Enable)begin
+            cp0_status = `Zero_Word;
+        end else if((wb_cp0_reg_we == `Write_Enable)&&(wb_cp0_reg_write_addr == `CP0_REG_STATUS))begin
+            cp0_status = wb_cp0_reg_write_data; 
+        end else begin
+            cp0_status = cp0_status_i;
+        end
+    end
+
+    always@(*)begin
+        if(rst==`Rst_Enable)begin
+            cp0_epc = `Zero_Word;
+        end else if((wb_cp0_reg_we == `Write_Enable)&&(wb_cp0_reg_write_addr == `CP0_REG_EPC))begin
+            cp0_epc = wb_cp0_reg_write_data; 
+        end else begin
+            cp0_epc = cp0_epc_i;
+        end
+    end
+
+    always@(*)begin
+        if(rst==`Rst_Enable)begin
+            cp0_cause = `Zero_Word;
+        end else if((wb_cp0_reg_we == `Write_Enable)&&(wb_cp0_reg_write_addr == `CP0_REG_CAUSE))begin
+            cp0_cause[9:8] = wb_cp0_reg_write_data[9:8];
+            cp0_cause[22] = wb_cp0_reg_write_data[22];
+            cp0_cause[23] = wb_cp0_reg_write_data[23];
+        end else begin
+            cp0_cause = cp0_cause_i;
+        end
+    end
+
+    always@(*)begin
+        if(rst==`Rst_Enable)begin
+            excepttype_o = `Zero_Word;
+        end else begin
+            excepttype_o = `Zero_Word;
+            if(current_inst_addr_i != `Zero_Word)begin
+                if(((cp0_cause[15:8] & cp0_status[15:8])!=8'b0)&&(cp0_status[1]==1'b0)&&(cp0_status[0]==1'b1))begin
+                    excepttype_o = 32'h00000001;   //interrupt
+                end else if(excepttype_i[8] == 1'b1)begin
+                    excepttype_o = 32'h00000008;   //syscall
+                end else if(excepttype_i[9] == 1'b1)begin
+                    excepttype_o = 32'h0000000a;   //inst_invalid
+                end else if(excepttype_i[10] == 1'b1)begin
+                    excepttype_o = 32'h0000000d;   //trap
+                end else if(excepttype_i[11] == 1'b1)begin
+                    excepttype_o = 32'h0000000c;   //ov
+                end else if(excepttype_i[12] == 1'b1)begin
+                    excepttype_o = 32'h0000000e;   //eret
+                end 
+            end
+        end
+    end
+
+assign mem_we_o = mem_we & (~(|excepttype_o));
+
+    always@(*)begin
+        if(rst==`Rst_Enable)begin
             wd_o = `Reg_Zero;
             wreg_o = `Write_Disable;
             wdata_o = `Zero_Word;
@@ -68,7 +145,7 @@ assign zero32 = `Zero_Word;
             lo_o = `Zero_Word;
             whilo_o = `Write_Disable;
             mem_addr_o = `Zero_Word;
-            mem_we_o = `Write_Disable;
+            mem_we = `Write_Disable;
             mem_sel_o = 4'b0000;
             mem_data_o = `Zero_Word;
             mem_ce_o = `Chip_Disable;
@@ -85,7 +162,7 @@ assign zero32 = `Zero_Word;
             lo_o = lo_i;
             whilo_o = whilo_i;
             mem_addr_o = `Zero_Word;
-            mem_we_o = `Write_Disable;
+            mem_we = `Write_Disable;
             mem_sel_o = 4'b0000;
             mem_data_o = `Zero_Word;
             mem_ce_o = `Chip_Disable;
@@ -97,7 +174,7 @@ assign zero32 = `Zero_Word;
             case(aluop_i)
                 `EXE_LB_OP: begin
                     mem_addr_o = mem_addr_i;
-                    mem_we_o = `Write_Disable;
+                    mem_we = `Write_Disable;
                     mem_ce_o = `Chip_Enable;
                     case(mem_addr_i[1:0])                                //decide the sel
                         2'b00: begin
@@ -124,7 +201,7 @@ assign zero32 = `Zero_Word;
                 end
                 `EXE_LBU_OP: begin
                     mem_addr_o = mem_addr_i;
-                    mem_we_o = `Write_Disable;
+                    mem_we = `Write_Disable;
                     mem_ce_o = `Chip_Enable;
                     case(mem_addr_i[1:0])                                //decide the sel
                         2'b00: begin
@@ -151,7 +228,7 @@ assign zero32 = `Zero_Word;
                 end
                 `EXE_LH_OP: begin
                     mem_addr_o = mem_addr_i;
-                    mem_we_o = `Write_Disable;
+                    mem_we = `Write_Disable;
                     mem_ce_o = `Chip_Enable;
                     case(mem_addr_i[1:0])                                //decide the sel
                         2'b00: begin
@@ -170,7 +247,7 @@ assign zero32 = `Zero_Word;
                 end
                 `EXE_LHU_OP: begin
                     mem_addr_o = mem_addr_i;
-                    mem_we_o = `Write_Disable;
+                    mem_we = `Write_Disable;
                     mem_ce_o = `Chip_Enable;
                     case(mem_addr_i[1:0])                                //decide the sel
                         2'b00: begin
@@ -189,14 +266,14 @@ assign zero32 = `Zero_Word;
                 end
                 `EXE_LW_OP: begin
                     mem_addr_o = mem_addr_i;
-                    mem_we_o = `Write_Disable;
+                    mem_we = `Write_Disable;
                     mem_ce_o = `Chip_Enable;
                     wdata_o = mem_data_i;
                     mem_sel_o = 4'b1111;
                 end
                 `EXE_LWL_OP: begin
                     mem_addr_o = {mem_addr_i[31:2], 2'b00};
-                    mem_we_o = `Write_Disable;
+                    mem_we = `Write_Disable;
                     mem_ce_o = `Chip_Enable;
                     mem_sel_o = 4'b1111;
                     case(mem_addr_i[1:0])                                //n 
@@ -220,7 +297,7 @@ assign zero32 = `Zero_Word;
                 end
                 `EXE_LWR_OP: begin
                     mem_addr_o = {mem_addr_i[31:2], 2'b00};
-                    mem_we_o = `Write_Disable;
+                    mem_we = `Write_Disable;
                     mem_ce_o = `Chip_Enable;
                     mem_sel_o = 4'b1111;
                     case(mem_addr_i[1:0])                                //n 
@@ -244,7 +321,7 @@ assign zero32 = `Zero_Word;
                 end
                 `EXE_SB_OP: begin
                     mem_addr_o = mem_addr_i;
-                    mem_we_o = `Write_Enable;
+                    mem_we = `Write_Enable;
                     mem_ce_o = `Chip_Enable;
                     mem_data_o = {4{reg2_i[7:0]}};
                     case(mem_addr_i[1:0])                                //decide the sel
@@ -267,7 +344,7 @@ assign zero32 = `Zero_Word;
                 end
                 `EXE_SH_OP: begin
                     mem_addr_o = mem_addr_i;
-                    mem_we_o = `Write_Enable;
+                    mem_we = `Write_Enable;
                     mem_ce_o = `Chip_Enable;
                     mem_data_o = {2{reg2_i[15:0]}};
                     case(mem_addr_i[1:0])                                //decide the sel
@@ -284,14 +361,14 @@ assign zero32 = `Zero_Word;
                 end
                 `EXE_SW_OP: begin
                     mem_addr_o = mem_addr_i;
-                    mem_we_o = `Write_Enable;
+                    mem_we = `Write_Enable;
                     mem_ce_o = `Chip_Enable;
                     mem_data_o = reg2_i;
                     mem_sel_o = 4'b1111;
                 end
                 `EXE_SWL_OP: begin
                     mem_addr_o = {mem_addr_i[31:2], 2'b00};
-                    mem_we_o = `Write_Enable;
+                    mem_we = `Write_Enable;
                     mem_ce_o = `Chip_Enable;
                     case(mem_addr_i[1:0])                                
                         2'b00: begin
@@ -317,7 +394,7 @@ assign zero32 = `Zero_Word;
                 end
                 `EXE_SWR_OP: begin
                     mem_addr_o = {mem_addr_i[31:2], 2'b00};
-                    mem_we_o = `Write_Enable;
+                    mem_we = `Write_Enable;
                     mem_ce_o = `Chip_Enable;
                     case(mem_addr_i[1:0])                                
                         2'b00: begin
@@ -343,7 +420,7 @@ assign zero32 = `Zero_Word;
                 end
                 `EXE_LL_OP: begin
                     mem_addr_o = mem_addr_i;
-                    mem_we_o = `Write_Disable;
+                    mem_we = `Write_Disable;
                     mem_ce_o = `Chip_Enable;
                     wdata_o = mem_data_i;
                     mem_sel_o = 4'b1111;
@@ -355,7 +432,7 @@ assign zero32 = `Zero_Word;
                         mem_addr_o = mem_addr_i;
                         llbit_we_o = `Write_Enable;
                         llbit_value_o = 1'b0;
-                        mem_we_o = `Write_Enable;
+                        mem_we = `Write_Enable;
                         mem_ce_o = `Chip_Enable;
                         mem_sel_o = 4'b1111;
                         wdata_o = 32'b1;                            //set rt as 1

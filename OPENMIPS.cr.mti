@@ -50,19 +50,19 @@ QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
 Top level modules:
 	mem
 
-} {} {}} {E:/Digital Circuit/OPEN MIPS/rtl/ram.v} {1 {vlog -work work -vopt -stats=none {E:/Digital Circuit/OPEN MIPS/rtl/ram.v}
-QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
--- Compiling module ram
-
-Top level modules:
-	ram
-
 } {} {}} {E:/Digital Circuit/OPEN MIPS/rtl/pc_reg.v} {1 {vlog -work work -vopt -stats=none {E:/Digital Circuit/OPEN MIPS/rtl/pc_reg.v}
 QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
 -- Compiling module pc_reg
 
 Top level modules:
 	pc_reg
+
+} {} {}} {E:/Digital Circuit/OPEN MIPS/rtl/ram.v} {1 {vlog -work work -vopt -stats=none {E:/Digital Circuit/OPEN MIPS/rtl/ram.v}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module ram
+
+Top level modules:
+	ram
 
 } {} {}} {E:/Digital Circuit/OPEN MIPS/tb/openmips_min_sop_tb.v} {1 {vlog -work work -vopt -stats=none {E:/Digital Circuit/OPEN MIPS/tb/openmips_min_sop_tb.v}
 QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
@@ -113,19 +113,19 @@ QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
 Top level modules:
 	llbit
 
-} {} {}} {E:/Digital Circuit/OPEN MIPS/rtl/hilo_reg.v} {1 {vlog -work work -vopt -stats=none {E:/Digital Circuit/OPEN MIPS/rtl/hilo_reg.v}
-QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
--- Compiling module hilo_reg
-
-Top level modules:
-	hilo_reg
-
 } {} {}} {E:/Digital Circuit/OPEN MIPS/rtl/id_ex.v} {1 {vlog -work work -vopt -stats=none {E:/Digital Circuit/OPEN MIPS/rtl/id_ex.v}
 QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
 -- Compiling module id_ex
 
 Top level modules:
 	id_ex
+
+} {} {}} {E:/Digital Circuit/OPEN MIPS/rtl/hilo_reg.v} {1 {vlog -work work -vopt -stats=none {E:/Digital Circuit/OPEN MIPS/rtl/hilo_reg.v}
+QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
+-- Compiling module hilo_reg
+
+Top level modules:
+	hilo_reg
 
 } {} {}} {E:/Digital Circuit/OPEN MIPS/rtl/openmips_min_sopc.v} {1 {vlog -work work -vopt -stats=none {E:/Digital Circuit/OPEN MIPS/rtl/openmips_min_sopc.v}
 QuestaSim-64 vlog 10.6c Compiler 2017.07 Jul 26 2017
