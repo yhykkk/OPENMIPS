@@ -11,16 +11,23 @@
 module OpenMIPS(
     input                               rst                        ,
     input                               clk                        ,
-    input              [`Reg-1:0]       rom_data_i                 ,//instruction input
-    input              [`Reg-1:0]       ram_data_i                 ,
+    input              [`Reg-1:0]       iwishbone_data_i           ,//instruction input
+    input              [`Reg-1:0]       dwishbone_data_i           ,//data input
+    input                               iwishbone_ack_i            ,
+    input                               dwishbone_ack_i            ,
     input              [   5:0]         int_i                      ,//6 interupt input
-    output             [`Reg-1:0]       rom_addr_o                 ,//aimed instruction reg        
-    output                              rom_ce_o                   ,
-    output             [`Reg-1:0]       ram_addr_o                 ,
-    output             [`Reg-1:0]       ram_data_o                 ,
-    output                              ram_we_o                   ,
-    output             [   3:0]         ram_sel_o                  ,
-    output                              ram_ce_o                   ,
+    output             [`Reg-1:0]       iwishbone_addr_o           ,//aimed instruction reg
+    output             [`Reg-1:0]       iwishbone_data_o           ,
+    output                              iwishbone_we_o             ,
+    output                              iwishbone_cyc_o            ,
+    output                              iwishbone_stb_o            ,
+    output             [   3:0]         iwishbone_sel_o            ,
+    output             [`Reg-1:0]       dwishbone_addr_o           ,//aimed data reg
+    output             [`Reg-1:0]       dwishbone_data_o           ,
+    output                              dwishbone_we_o             ,
+    output                              dwishbone_cyc_o            ,
+    output                              dwishbone_stb_o            ,
+    output             [   3:0]         dwishbone_sel_o            ,
     output                              timer_int_o                 //timed interrupt 
     );
 
@@ -61,6 +68,8 @@ wire                   [`Reg-1:0]       mem_lo_i                   ;
 //stall signal
 wire                                    stallreq_from_id           ;
 wire                                    stallreq_from_ex           ;
+wire                                    stallreq_from_if           ;
+wire                                    stallreq_from_mem          ;
 wire                   [   5:0]         stall                      ;
 wire                   [`Reg_Double-1:0]hilo_ex                    ;
 wire                   [   1:0]         cnt_ex                     ;
@@ -131,7 +140,16 @@ wire                   [  31:0]         cp0_excepttype             ;
 wire                   [`Reg-1:0]       cp0_current_inst_addr      ;
 wire                                    cp0_is_in_delayslot        ;
 wire                   [`Reg-1:0]       cp0_epc_o                  ;
-    
+
+//wishbone
+reg                    [`Reg-1:0]       if_inst                    ;
+reg                    [`Reg-1:0]       dcpu_data_o                ;
+reg                    [`Inst_Addr-1:0] dcpu_addr_i                ;
+reg                    [`Reg-1:0]       dcpu_data_i                ;
+reg                                     dcpu_we_i                  ;
+reg                                     dcpu_ce_i                  ;
+reg                    [   3:0]         dcpu_sel_i                 ;
+
     //pc
 wire                   [`Inst_Addr-1:0] pc                         ;
     pc_reg pc_reg_inst0(
@@ -155,7 +173,7 @@ wire                   [`Inst_Data-1:0] id_inst                    ;
     .rst                               (rst                       ),
     .clk                               (clk                       ),
     .if_pc                             (pc                        ),//address for instr
-    .if_inst                           (rom_data_i                ),//instr
+    .if_inst                           (if_inst                ),//instr
     .id_pc                             (id_pc                     ),//output address for instr
     .id_inst                           (id_inst                   ),//output instr
     .stall                             (stall                     ),
@@ -375,12 +393,12 @@ wire                   [`Reg-1:0]       mem_wdata_i                ;
     .hi_o                              (mem_hi                    ),
     .lo_o                              (mem_lo                    ),
     .whilo_o                           (mem_whilo                 ),
-    .mem_data_i                        (ram_data_i                ),
-    .mem_addr_o                        (ram_addr_o                ),
-    .mem_we_o                          (ram_we_o                  ),
-    .mem_sel_o                         (ram_sel_o                 ),
-    .mem_data_o                        (ram_data_o                ),
-    .mem_ce_o                          (ram_ce_o                  ),
+    .mem_data_i                        (dcpu_data_o                ),
+    .mem_addr_o                        (dcpu_addr_i                ),
+    .mem_we_o                          (dcpu_we_i                  ),
+    .mem_sel_o                         (dcpu_sel_i                 ),
+    .mem_data_o                        (dcpu_data_i                ),
+    .mem_ce_o                          (dcpu_ce_i                 ),
     .aluop_i                           (mem_aluop                 ),
     .reg2_i                            (mem_reg2                  ),
     .mem_addr_i                        (mem_mem_addr              ),
@@ -458,7 +476,9 @@ wire                   [`Reg-1:0]       mem_wdata_i                ;
     .flush                             (flush                     ),
     .new_pc                            (new_pc                    ),
     .cp0_epc_i                         (cp0_epc_o                 ),
-    .excepttype_i                      (cp0_excepttype            ) 
+    .excepttype_i                      (cp0_excepttype            ),
+    .stallreq_from_id                  (stallreq_from_if          ),
+    .stallreq_from_ex                  (stallreq_from_mem         ) 
     );
 
     div div_inst0(
@@ -503,6 +523,51 @@ wire                   [`Reg-1:0]       mem_wdata_i                ;
     .current_inst_addr_i               (cp0_current_inst_addr     ),
     .is_in_delayslot_i                 (cp0_is_in_delayslot       ) 
     );
+    
+    wishbone_bus_if iwishbone_bus_if(
+    .clk                               (clk                       ),
+    .rst                               (rst                       ),
+    .stall_i                           (stall_i                   ),
+    .flush_i                           (flush_i                   ),
+    .cpu_ce_i                          (cpu_ce_i                  ),
+    .cpu_data_i                        (32'b0                     ),
+    .cpu_addr_i                        (pc                        ),
+    .cpu_we_i                          (1'b0                      ),
+    .cpu_sel_i                         (4'b1111                   ),
+    .cpu_data_o                        (if_inst                   ),
+    .wishbone_data_i                   (wishbone_data_i           ),
+    .wishbone_ack_i                    (wishbone_ack_i            ),
+    .wishbone_addr_o                   (wishbone_addr_o           ),
+    .wishbone_data_o                   (wishbone_data_o           ),
+    .wishbone_cyc_o                    (wishbone_cyc_o            ),
+    .wishbone_stb_o                    (wishbone_stb_o            ),
+    .wishbone_we_o                     (wishbone_we_o             ),
+    .wishbone_sel_o                    (wishbone_sel_o            ),
+    .stall_req                         (stallreq_from_if          ) 
+    );
+
+    wishbone_bus_if dwishbone_bus_if(
+    .clk                               (clk                       ),
+    .rst                               (rst                       ),
+    .stall_i                           (stall_i                   ),
+    .flush_i                           (flush_i                   ),
+    .cpu_ce_i                          (dcpu_ce_i                 ),
+    .cpu_data_i                        (dcpu_data_i               ),
+    .cpu_addr_i                        (dcpu_addr_i               ),
+    .cpu_we_i                          (dcpu_we_i                 ),
+    .cpu_sel_i                         (dcpu_sel_i                ),
+    .cpu_data_o                        (dcpu_data_o               ),
+    .wishbone_data_i                   (wishbone_data_i           ),
+    .wishbone_ack_i                    (wishbone_ack_i            ),
+    .wishbone_addr_o                   (wishbone_addr_o           ),
+    .wishbone_data_o                   (wishbone_data_o           ),
+    .wishbone_cyc_o                    (wishbone_cyc_o            ),
+    .wishbone_stb_o                    (wishbone_stb_o            ),
+    .wishbone_we_o                     (wishbone_we_o             ),
+    .wishbone_sel_o                    (wishbone_sel_o            ),
+    .stall_req                         (stallreq_from_mem         ) 
+    );
+    
     
     
     

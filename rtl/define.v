@@ -287,3 +287,7 @@
 `define CP0_REG_EPC     5'b01110 
 `define CP0_REG_PRID    5'b01111 
 `define CP0_REG_CONFIG  5'b10000
+/***************** wishbone defination ********************/
+`define WB_IDLE           2'b00
+`define WB_BUSY           2'b01
+`define WB_WAIT_FOR_STALL 2'b11

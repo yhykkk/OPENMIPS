@@ -12,6 +12,8 @@ module ctrl(
     input                               rst                        ,
     input                               stallreq_from_id           ,//pause request from id
     input                               stallreq_from_ex           ,//pause request from ex
+    input                               stallreq_from_if           ,//pause request from wb_if
+    input                               stallreq_from_mem          ,//pause request from wb_mem
     input              [`Reg-1:0]       cp0_epc_i                  ,
     input              [  31:0]         excepttype_i               ,
     output reg         [   5:0]         stall                      ,
@@ -46,12 +48,18 @@ always@(*)begin
             default :begin
             end    
         endcase
+    end else if(stallreq_from_mem == `Stop)begin
+        flush = 1'b0;
+        stall = 6'b011111; 
     end else if(stallreq_from_ex == `Stop)begin
         flush = 1'b0;
         stall = 6'b001111;                                          //ex: (mem,web 0) other pause
     end else if(stallreq_from_id == `Stop)begin
         flush = 1'b0;
         stall = 6'b000111;                                          //id: (ex,mem,web 0) other pause
+    end else if(stallreq_from_if == `Stop)begin
+        flush = 1'b0;
+        stall = 6'b000111;                                          //if: 000111: for delayslot must not be seen as none(in if stall)
     end else begin
         stall = 6'b0;
         flush = 1'b0;
