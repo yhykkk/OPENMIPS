@@ -25,3 +25,7 @@ This project originates from the book _"自己动手写CPU"_ by **SiLei Lei**, i
 
 ## Conclusion
 OpenMIPS serves as a versatile, educational tool for anyone interested in exploring MIPS processors and understanding CPU design principles. Its open-source nature encourages experimentation, modification, and learning.
+
+## Features
+<image src="https://img.shields.io/badge/Contributor-yhykkk-0fff00">
+<image src="https://img.shields.io/badge/Languange-verilog-ff00ff">
